@@ -2,7 +2,6 @@
 **
 ** @@
 ******************************************************************************/
-#define _XOPEN_SOURCE 700
 #include "sigtk.h"
 #include "misc.h"
 #include <assert.h>
