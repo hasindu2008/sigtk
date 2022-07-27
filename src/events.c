@@ -7,6 +7,7 @@
 ** @@
 ******************************************************************************/
 
+#define _XOPEN_SOURCE 700
 #include <assert.h>
 #include <errno.h>
 #include <float.h>
@@ -20,7 +21,6 @@
 #include <unistd.h>
 #include "error.h"
 #include "sigtk.h"
-
 
 #ifndef DISABLE_KSORT
 #include "ksort.h"

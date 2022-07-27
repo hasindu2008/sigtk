@@ -6,14 +6,14 @@
 ** @@
 ******************************************************************************/
 
+#define _XOPEN_SOURCE 700
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include "sigtk.h"
 #include "model.h"
-#include "misc.h"
-
+#include "error.h"
 //#define DEBUG_MODEL_PRINT 1
 
 uint32_t eval_num_kmer(uint32_t kmer_size,uint32_t type){

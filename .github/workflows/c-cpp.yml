@@ -84,9 +84,9 @@ jobs:
       run: make CC=icc -j8
     - name: test
       run: make test CC=icc
-  os_x_10:
-    name: OSX 10
-    runs-on: macos-10.15
+  os_x_11:
+    name: OSX 11
+    runs-on: macos-11
     steps:
     - uses: actions/checkout@v2
     - name: build
