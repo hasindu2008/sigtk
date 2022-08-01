@@ -12,7 +12,7 @@ cd sigtk
 make
 ```
 
-The commands to zlib __development libraries__ on some popular distributions :
+The commands to install zlib __development libraries__ on some popular distributions:
 ```sh
 On Debian/Ubuntu : sudo apt-get install zlib1g-dev
 On Fedora/CentOS : sudo dnf/yum install zlib-devel
@@ -28,7 +28,7 @@ Prints a synthetic reference signal for a given reference genome using tradition
 
 Usage:  `sigtk sref reference.fa`
 
-Specify `--rna` to use the RNA pore-model. Output is a tsv file with each row being a reference contig (one for + and another for -) and the columns being as described below:
+Specify `--rna` to use the RNA pore-model. Output is a tab-delimited text file with each row being a reference contig (one for + and another for - in case of DNA) and the columns being as described below:
 
 |Col|Type  |Name            |Description                                                        |
 |--:|:----:|:------:        |:-----------------------------------------                         |
@@ -41,7 +41,7 @@ Specify `--rna` to use the RNA pore-model. Output is a tsv file with each row be
 
 ## Per-record raw-signal operations
 
-The subtools in this section perform various operations on individual raw-signal records in a BLOW5/SLOW5 file. They take one of the following forms:
+The subtools in this section perform various operations on individual raw-signal records in a BLOW5/SLOW5 file. They can be used in one of the following forms:
 
 ```
 # To perform subtool operation on all reads in a BLOW5 file
@@ -51,6 +51,16 @@ sigtk <subtool> reads.blow5 read_id1 read_id2 ..
 ```
 
 By default, a tab-delimited text file with the first row being the header is printed. You can suppress the header using `-n` flag for easy use with command line tools such as *awk*. Some subtools can be invoked with *-c* for compact output that prints data in a custom encoding explained in each subtool if relevant. These subtools automatically detect if raw signal data in for DNA or RNA if applicable.
+
+## pa
+
+Prints the raw signal in pico-amperes.
+
+|Col|Type  |Name            |Description                                                            |
+|--:|:----:|:------:        |:-----------------------------------------                             |
+|1  |string|read_id         |Read identifier name                                                   |
+|2  |int   |len_raw_signal  |The number of samples in the raw signal                                |
+|3  |float*|pa              |Comma separated Raw signal in pico amperes                             |
 
 ## event
 
@@ -75,7 +85,8 @@ To obtain a condensed output that consumes less space and one record per row, sp
 |2  |int   |len_raw_signal  |The number of samples in the raw signal                                |
 |3  |int   |raw_start       |Raw signal start index of the first event (0-based; BED-like; closed)  |
 |4  |int   |raw_end         |Raw signal end index of the last event (0-based; BED-like; open)       |
-|5  |int*  |events          |Command separated event lengths (based on no. raw signals samples)     |
+|5  |int   |num_event       |Number of events                                                       |
+|6  |int*  |events          |Comma separated event lengths (based on no. raw signal samples)       |
 
 The event 0 starts at raw signal index `raw_start` (0-based; BED-like; closed) and ends at `raw_start+event[0]` (0-based; BED-like; open).
 The event 1 starts at raw signal index `raw_start+event[0]` (0-based; BED-like; closed) and ends at `raw_start+event[0]+event[1]` (0-based; BED-like; open). Likewise, the events can be reconstructed by using the cumulative sum of `events`.
@@ -94,17 +105,6 @@ Prints signal statistics.
 |6  |float |pa_std          |Standard deviation of pico-amperes scaled signal                       |
 |7  |int   |raw_median      |Median of raw signal values                                            |
 |8  |float |pa_median       |Mean of pico-amperes scaled signal                                     |
-
-
-## pa
-
-Prints the raw signal in pico-amperes.
-
-|Col|Type  |Name            |Description                                                            |
-|--:|:----:|:------:        |:-----------------------------------------                             |
-|1  |string|read_id         |Read identifier name                                                   |
-|2  |int   |len_raw_signal  |The number of samples in the raw signal                                |
-|3  |float*|pa              |Comma separated Raw signal in pico amperes                             |
 
 
 ## Acknowledgement

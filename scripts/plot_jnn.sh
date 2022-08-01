@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#scripts/plot_events.sh test/sequin_rna.blow5 00213403-4297-4f03-8412-3cc8b9cb845a
+#scripts/plot_jnn.sh test/sequin_rna.blow5 00213403-4297-4f03-8412-3cc8b9cb845a
 
 set -e
 
@@ -22,24 +22,29 @@ ${SIGTK} --version &> /dev/null || { echo -e $RED"sigtk not found! Either put si
 [ -z ${SLOW5TOOLS} ] && export SLOW5TOOLS=slow5tools
 ${SLOW5TOOLS} --version &> /dev/null || { echo -e $RED"slow5tools not found! Either put slow5tools under path or set SLOW5TOOLS variable, e.g.,export SLOW5TOOLS=/path/to/slow5tools"$NORMAL; exit 1;}
 
-rm -f sigtk_${read_id}.tmp sigtk_${read_id}.events.tmp
+rm -f sigtk_${read_id}.tmp sigtk_${read_id}.jnn.tmp
 
 ${SLOW5TOOLS} get --to slow5 ${FILE} ${read_id} | grep -v '^[#@]' | awk '{print $8}' > sigtk_${read_id}.tmp || { echo -e $RED"Error: failed to get read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
-${SIGTK} event ${FILE} ${read_id} -n | awk '{print $3"\t"$4"\t"$5}' > sigtk_${read_id}.events.tmp || { echo -e $RED"Error: failed to calculate events for read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
+${SIGTK} jnn ${FILE} ${read_id} -n | cut -f 3,4 | tr ',;' '\t'  > sigtk_${read_id}.jnn.tmp || { echo -e $RED"Error: failed to apply jnn for read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
+COUNT=$(cut -f1  sigtk_${read_id}.jnn.tmp);
+[ "$COUNT" == "0" ] && { echo -e $RED"Error: no segments found for read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
 
 if [[ "${SIGTK_PLOT_MTD}" == "matlab" ]]; then
-
     matlab.exe -nosplash -nodesktop -minimize -r "
-    a=dlmread('sigtk_${read_id}.tmp'); b=dlmread('sigtk_${read_id}.events.tmp');
-    startidx=b(:,1)+1; endidx=b(:,2);
-    avg=zeros(length(a),1);
-    for j=1:length(startidx)
-        avg(startidx(j):endidx(j))=mean(a(startidx(j):endidx(j)));
+    a=dlmread('sigtk_${read_id}.tmp'); b=dlmread('sigtk_${read_id}.jnn.tmp');
+    c=b(:,1);
+    plot(a); hold on;
+    if(c>0)
+        x=b(:,2:end);
+        y=zeros(size(x))+1200;
+        stem(x,y);
     end
-    plot(a); hold on; plot(avg); xlabel('sample index'), ylabel('raw signal value');  legend('raw signal','events'); title('$read_id');
+    xlabel('sample index'), ylabel('raw signal value');  legend('raw signal','jnn'); title('$read_id');
     "
 else
     echo -e $RED"SIGTK_PLOT_MTD variable not set properly! set SIGTK_PLOT_MTD to matlab. e.g.,export SIGTK_PLOT_MTD=matlab"$NORMAL
     exit 1
 fi
+
+
 

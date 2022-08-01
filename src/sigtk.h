@@ -6,7 +6,7 @@
 #define SIGTK_H
 
 #include <stdint.h>
-#include "slow5/slow5.h"
+#include <slow5/slow5.h>
 
 #define SIGTK_VERSION "0.1.0"
 
@@ -43,6 +43,9 @@
 #define LSAR_QJUMP 'j'      //jump in the query
 #define LSAR_TMATCH 'M'      //match in the target
 #define LSAR_QMATCH 'm'   //match in the query
+
+#define SIGTK_MEAN_VAL 104.6
+#define SIGTK_STDV_VAL 20.39
 
 /* a single signal-space event : adapted from taken from scrappie */
 typedef struct {
@@ -104,5 +107,24 @@ typedef struct {
     //float scaled_var;
     //float log_scaled_var;
 } scalings_t;
+
+typedef struct{
+    int8_t rna;
+    int8_t compact;
+    int8_t p_stat;
+}opt_t;
+
+
+/* misc */
+float *signal_in_picoamps(slow5_rec_t *rec);
+int8_t drna_detect(slow5_file_t *sp);
+void drna_mismatch(slow5_file_t *sp, int8_t rna);
+
+/* models */
+uint32_t read_model(model_t* model, const char* file, uint32_t type);
+uint32_t set_model(model_t* model, uint32_t model_id);
+
+/* event detect */
+event_table getevents(size_t nsample, float* rawptr, int8_t rna);
 
 #endif

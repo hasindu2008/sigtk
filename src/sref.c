@@ -22,6 +22,9 @@ KSEQ_INIT(gzFile, gzread)
 
 //#define NORMALISE_ALL 1
 
+uint32_t read_model(model_t* model, const char* file, uint32_t type);
+uint32_t set_model(model_t* model, uint32_t model_id);
+
 static struct option long_options[] = {
     {"verbose", required_argument, 0, 'v'},        //0 verbosity level [1]
     {"help", no_argument, 0, 'h'},                 //1

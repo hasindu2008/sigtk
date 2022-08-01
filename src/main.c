@@ -1,15 +1,16 @@
 /* @file main.c
 **
 ******************************************************************************/
+#include <assert.h>
+#include <signal.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
-#include <signal.h>
-#include <assert.h>
-#include "sigtk.h"
-#include "misc.h"
+#include <unistd.h>
+
 #include "error.h"
+#include "misc.h"
+#include "sigtk.h"
 
 #ifdef HAVE_EXECINFO_H
     #include <execinfo.h>
@@ -47,11 +48,11 @@ int print_usage(FILE *fp_help){
     fprintf(fp_help,"Usage: sigtk <command> [options]\n\n");
     fprintf(fp_help,"command:\n");
     fprintf(fp_help,"         sref      general synthetic signal for a reference\n");
+    fprintf(fp_help,"         pa        print raw signal in pico-amperes\n");
     fprintf(fp_help,"         event     segment raw signal into events\n");
     fprintf(fp_help,"         stat      print statistics of the raw signal\n");
-    // fprintf(fp_help,"         seg       segments such as adaptor and polyA\n");
-    // fprintf(fp_help,"         jnn       print all segments found using james' neural network\n");
-    fprintf(fp_help,"         pa        print raw signal in pico-amperes\n");
+    //fprintf(fp_help,"         prefix    prefix segments such as adaptor and polyA\n");
+    //fprintf(fp_help,"         jnn       print segments found using JNN segmenter\n");
     if(fp_help==stderr){
         exit(EXIT_FAILURE);
     }
@@ -78,7 +79,7 @@ int main(int argc, char* argv[]){
     else if (strcmp(argv[1],"sref")==0){
         ret=srefmain(argc-1, argv+1);
     }
-    else if (strcmp(argv[1],"event")==0 || strcmp(argv[1],"stat")==0 || strcmp(argv[1],"seg")==0 || strcmp(argv[1],"pa")==0 || strcmp(argv[1],"jnn")==0){
+    else if (strcmp(argv[1],"event")==0 || strcmp(argv[1],"stat")==0 || strcmp(argv[1],"prefix")==0 || strcmp(argv[1],"pa")==0 || strcmp(argv[1],"jnn")==0){
         ret=cmain(argc-1, argv+1, argv[1]);
     }
     else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
