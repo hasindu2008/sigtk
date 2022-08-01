@@ -24,8 +24,8 @@ ${SLOW5TOOLS} --version &> /dev/null || { echo -e $RED"slow5tools not found! Eit
 
 rm -f sigtk_${read_id}.tmp sigtk_${read_id}.events.tmp
 
-slow5tools get --to slow5 ${FILE} ${read_id} | grep -v '^[#@]' | awk '{print $8}' > sigtk_${read_id}.tmp
-sigtk event ${FILE} ${read_id} -n | awk '{print $3"\t"$4"\t"$5}' > sigtk_${read_id}.events.tmp
+slow5tools get --to slow5 ${FILE} ${read_id} | grep -v '^[#@]' | awk '{print $8}' > sigtk_${read_id}.tmp || { echo -e $RED"Error: failed to get read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
+sigtk event ${FILE} ${read_id} -n | awk '{print $3"\t"$4"\t"$5}' > sigtk_${read_id}.events.tmp || { echo -e $RED"Error: failed to calculate events for read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
 
 if [[ "${SIGTK_PLOT_MTD}" == "matlab" ]]; then
 
@@ -37,7 +37,6 @@ if [[ "${SIGTK_PLOT_MTD}" == "matlab" ]]; then
         avg(startidx(j):endidx(j))=mean(a(startidx(j):endidx(j)));
     end
     plot(a); hold on; plot(avg); xlabel('sample index'), ylabel('raw signal value');  legend('raw signal','events');
-    figure; plot(b(:,3));
     "
 else
     echo -e $RED"SIGTK_PLOT_MTD variable not set properly! set SIGTK_PLOT_MTD to matlab. e.g.,export SIGTK_PLOT_MTD=matlab"$NORMAL

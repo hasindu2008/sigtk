@@ -9,16 +9,13 @@
 
 #define _XOPEN_SOURCE 700
 #include <assert.h>
-#include <errno.h>
 #include <float.h>
-#include <inttypes.h>
 #include <math.h>
-#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+
 #include "error.h"
 #include "sigtk.h"
 
@@ -95,7 +92,7 @@ int floatcmp(const void* x, const void* y) {
  *
  *	@return void
  **/
-void quantilef(const float* x, size_t nx, float* p, size_t np) {
+static void quantilef(const float* x, size_t nx, float* p, size_t np) {
     if (NULL == p) {
         return;
     }
@@ -149,7 +146,7 @@ void quantilef(const float* x, size_t nx, float* p, size_t np) {
  *
  *	@return Median of array on success, NAN otherwise.
  **/
-float medianf2(const float* x, size_t n) {
+static float medianf2(const float* x, size_t n) {
 #ifdef DISABLE_KSORT
     float p = 0.5;
     quantilef(x, n, &p, 1);
@@ -213,7 +210,7 @@ static float madf(const float* x, size_t n, const float* med) {
  *
  *	@return A range structure containing new start and end for read
  **/
-raw_table trim_raw_by_mad(raw_table rt, int chunk_size, float perc) {
+static raw_table trim_raw_by_mad(raw_table rt, int chunk_size, float perc) {
     assert(chunk_size > 1);
     assert(perc >= 0.0 && perc <= 1.0);
 
@@ -249,7 +246,7 @@ raw_table trim_raw_by_mad(raw_table rt, int chunk_size, float perc) {
     return rt;
 }
 
-raw_table trim_and_segment_raw(raw_table rt, int trim_start, int trim_end,
+static raw_table trim_and_segment_raw(raw_table rt, int trim_start, int trim_end,
                                int varseg_chunk, float varseg_thresh) {
     NULL_CHK(rt.raw);
 
@@ -293,7 +290,7 @@ typedef Detector* DetectorPtr;
  *	 @param sumsq    double[d_length + 1] Vector to store sum of squares (out)
  *       @param d_length Length of data vector
  **/
-void compute_sum_sumsq(const float* data, double* sum, double* sumsq,
+static void compute_sum_sumsq(const float* data, double* sum, double* sumsq,
                        size_t d_length) {
     assert(d_length > 0);
 
@@ -315,7 +312,7 @@ void compute_sum_sumsq(const float* data, double* sum, double* sumsq,
  *
  *	 @returns float array containing tstats.  Returns NULL on error
  **/
-float* compute_tstat(const double* sum, const double* sumsq, size_t d_length,
+static float* compute_tstat(const double* sum, const double* sumsq, size_t d_length,
                      size_t w_length) {
     assert(d_length > 0);
     assert(w_length > 0);
@@ -371,7 +368,7 @@ float* compute_tstat(const double* sum, const double* sumsq, size_t d_length,
  *	 @returns array of length nsample whose elements contain peak positions
  *	 Remaining elements are padded by zeros.
  **/
-size_t* short_long_peak_detector(DetectorPtr short_detector,
+static size_t* short_long_peak_detector(DetectorPtr short_detector,
                                  DetectorPtr long_detector,
                                  const float peak_height) {
     assert(short_detector->signal_length == long_detector->signal_length);
@@ -457,7 +454,7 @@ size_t* short_long_peak_detector(DetectorPtr short_detector,
  *
  *	@returns An initialised event. A 'null' event is returned on error.
  **/
-event_t create_event(size_t start, size_t end, double const* sums,
+static event_t create_event(size_t start, size_t end, double const* sums,
                      double const* sumsqs, size_t nsample) {
     assert(start < nsample);
     assert(end <= nsample);
@@ -475,7 +472,7 @@ event_t create_event(size_t start, size_t end, double const* sums,
     return event;
 }
 
-event_table create_events(size_t const* peaks, double const* sums,
+static event_table create_events(size_t const* peaks, double const* sums,
                           double const* sumsqs, size_t nsample) {
     event_table et = {0};
 
@@ -506,7 +503,7 @@ event_table create_events(size_t const* peaks, double const* sums,
     return et;
 }
 
-event_table detect_events(raw_table const rt, detector_param const edparam) {
+static event_table detect_events(raw_table const rt, detector_param const edparam) {
     event_table et = {0};
 
     double* sums = (double*)calloc(rt.n + 1, sizeof(double));

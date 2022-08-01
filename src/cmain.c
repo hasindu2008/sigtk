@@ -2,15 +2,19 @@
 **
 ** @@
 ******************************************************************************/
-#include "sigtk.h"
-#include "misc.h"
+
 #include <assert.h>
 #include <getopt.h>
-#include <pthread.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+
+#include "error.h"
+#include "misc.h"
+#include "sigtk.h"
+#include "stat.h"
 
 int compact = 0;
 
@@ -34,6 +38,7 @@ void event_hdr();
 void pa_hdr();
 void jnn_hdr();
 void jnn_func(slow5_rec_t *rec, int8_t rna);
+int8_t drna_detect(slow5_file_t *sp);
 
 int cmain(int argc, char* argv[], char *mode) {
 

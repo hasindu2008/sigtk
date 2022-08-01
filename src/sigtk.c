@@ -11,6 +11,7 @@
 
 #include "sigtk.h"
 #include "misc.h"
+#include "error.h"
 
 #include <slow5/slow5.h>
 
