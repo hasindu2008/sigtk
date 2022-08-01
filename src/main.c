@@ -1,15 +1,16 @@
 /* @file main.c
 **
 ******************************************************************************/
+#include <assert.h>
+#include <signal.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
-#include <signal.h>
-#include <assert.h>
-#include "sigtk.h"
-#include "misc.h"
+#include <unistd.h>
+
 #include "error.h"
+#include "misc.h"
+#include "sigtk.h"
 
 #ifdef HAVE_EXECINFO_H
     #include <execinfo.h>

@@ -75,7 +75,8 @@ To obtain a condensed output that consumes less space and one record per row, sp
 |2  |int   |len_raw_signal  |The number of samples in the raw signal                                |
 |3  |int   |raw_start       |Raw signal start index of the first event (0-based; BED-like; closed)  |
 |4  |int   |raw_end         |Raw signal end index of the last event (0-based; BED-like; open)       |
-|5  |int*  |events          |Command separated event lengths (based on no. raw signals samples)     |
+|5  |int   |num_event       |Number of events                                                       |
+|6  |int*  |events          |Comma separated event lengths (based on no. raw signals samples)       |
 
 The event 0 starts at raw signal index `raw_start` (0-based; BED-like; closed) and ends at `raw_start+event[0]` (0-based; BED-like; open).
 The event 1 starts at raw signal index `raw_start+event[0]` (0-based; BED-like; closed) and ends at `raw_start+event[0]+event[1]` (0-based; BED-like; open). Likewise, the events can be reconstructed by using the cumulative sum of `events`.

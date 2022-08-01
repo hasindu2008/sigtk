@@ -7,16 +7,18 @@
 ******************************************************************************/
 
 #define _XOPEN_SOURCE 700
+#include <assert.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include "sigtk.h"
-#include "model.h"
+
 #include "error.h"
+#include "model.h"
+#include "sigtk.h"
+
 //#define DEBUG_MODEL_PRINT 1
 
-uint32_t eval_num_kmer(uint32_t kmer_size,uint32_t type){
+static inline uint32_t eval_num_kmer(uint32_t kmer_size,uint32_t type){
 
     uint32_t num_kmer = 0;
     if(type==MODEL_TYPE_NUCLEOTIDE){
