@@ -178,7 +178,7 @@ jnn_pair_t jnnv2(const int16_t *sig, int64_t nsample, jnnv2_param_t param){
 }
 
 jnn_pair_t find_adaptor(slow5_rec_t *rec){
-    jnnv2_param_t param = JNNV2_ADAPTOOR;
+    jnnv2_param_t param = JNNV2_RNA_ADAPTOR;
     return jnnv2(rec->raw_signal, rec->len_raw_signal, param);
 }
 
@@ -201,7 +201,7 @@ jnn_pair_t *jnn_core(const float *sig, int64_t nsample, jnn_param_t param, int *
     int err = 0;        // total error
     int prev_err = 0;  // consecutive error
     int c = 0;         // counter
-    int w = param.w;   // window to increase total error thresh
+    int w = param.corrector;   // window to increase total error thresh
     int seg_dist = param.seg_dist; // distance between 2 segs to be merged as one
     int start = 0;     // start pos
     int end = 0 ;      // end pos
@@ -301,7 +301,7 @@ jnn_pair_t *jnn_pa(const float *raw, int64_t nsample, jnn_param_t param, int *n)
 }
 
 
-jnn_pair_t jnn_print(slow5_rec_t *rec){
+jnn_pair_t jnn_print(slow5_rec_t *rec, int8_t fmt){
 
     int seg_i = 0;
     jnn_param_t param = JNNV1_PARAM;
@@ -311,21 +311,24 @@ jnn_pair_t jnn_print(slow5_rec_t *rec){
     if(segs){
         printf("%d\t",seg_i);
 
-        uint64_t ci = 0;
-        uint64_t mi = 0;
-        for(int i=0; i<seg_i; i++){
-            ci += (mi = segs[i].x - ci);
-            if(mi) printf("%dj",(int)mi);
-            ci += (mi = segs[i].y - ci);
-            if(mi) printf("%dm",(int)mi);
+        if(fmt){
+            uint64_t ci = 0;
+            uint64_t mi = 0;
+            for(int i=0; i<seg_i; i++){
+                ci += (mi = segs[i].x - ci);
+                if(mi) printf("%dH",(int)mi);
+                ci += (mi = segs[i].y - ci);
+                if(mi) printf("%d,",(int)mi);
+            }
+        } else {
+            for(int i=0; i<seg_i; i++){
+                printf("%ld,%ld;",segs[i].x,segs[i].y);
+            }
         }
-        printf("\t");
-        for(int i=0; i<seg_i; i++){
-            printf("%ld,%ld;",segs[i].x,segs[i].y);
-        }
-
         if(seg_i){
             p = segs[seg_i-1];
+        } else {
+            printf(".");
         }
         free(segs);
     }

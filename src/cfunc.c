@@ -78,7 +78,6 @@ void event_func(slow5_rec_t *rec, int8_t rna){
 
     event_table et = getevents(rec->len_raw_signal, current_signal, rna);
 
-
     print_events(rec->read_id,et, rec);
 
     free(current_signal);
@@ -114,12 +113,12 @@ void jnn_func(slow5_rec_t *rec, int8_t rna){
     uint64_t len_raw_signal = rec->len_raw_signal;
     printf("%ld\t",len_raw_signal);
 
-    jnn_print(rec);
+    jnn_print(rec, compact);
     printf("\n");
 
 }
 void jnn_hdr(){
-    printf("read_id\tlen_raw_signal\tnum_seg\tLSAR\tseg_st0,seg_end0;seg_st1,seg_end1;....\n");
+    printf("read_id\tlen_raw_signal\tnum_seg\tsegs\n");
 }
 
 void stat_hdr(){
