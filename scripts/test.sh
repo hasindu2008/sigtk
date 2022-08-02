@@ -31,11 +31,16 @@ diff -q test/sref_rna.exp a.tsv  || die "diff failed"
 
 echo "DNA seg"
 ex ./sigtk seg test/sp1_dna.blow5 > test/seg_dna.txt || die "Running the tool failed"
-diff test/seg_dna.txt test/seg_dna.exp
+cut -f 1-6 test/seg_dna.exp > test/seg_dna.a.tmp
+cut -f 1-6 test/seg_dna.txt > test/seg_dna.b.tmp
+diff test/seg_dna.a.tmp test/seg_dna.b.tmp || die "diff failed"
 
 echo "RNA seg"
 ex ./sigtk seg test/sequin_rna.blow5 > test/seg_rna.txt || die "Running the tool failed"
 diff -q test/seg_rna.txt test/seg_rna.exp  || die "diff failed"
+cut -f 1-6 test/seg_rna.exp > test/seg_rna.a.tmp
+cut -f 1-6 test/seg_rna.txt > test/seg_rna.b.tmp
+diff test/seg_rna.a.tmp test/seg_rna.b.tmp || die "diff failed"
 
 echo "DNA jnn"
 ex ./sigtk jnn test/sp1_dna.blow5 > test/jnn_dna.txt || die "Running the tool failed"
