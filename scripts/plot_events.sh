@@ -24,8 +24,8 @@ ${SLOW5TOOLS} --version &> /dev/null || { echo -e $RED"slow5tools not found! Eit
 
 rm -f sigtk_${read_id}.tmp sigtk_${read_id}.events.tmp
 
-slow5tools get --to slow5 ${FILE} ${read_id} | grep -v '^[#@]' | awk '{print $8}' > sigtk_${read_id}.tmp || { echo -e $RED"Error: failed to get read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
-sigtk event ${FILE} ${read_id} -n | awk '{print $3"\t"$4"\t"$5}' > sigtk_${read_id}.events.tmp || { echo -e $RED"Error: failed to calculate events for read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
+${SLOW5TOOLS} get --to slow5 ${FILE} ${read_id} | grep -v '^[#@]' | awk '{print $8}' > sigtk_${read_id}.tmp || { echo -e $RED"Error: failed to get read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
+${SIGTK} event ${FILE} ${read_id} -n | awk '{print $3"\t"$4"\t"$5}' > sigtk_${read_id}.events.tmp || { echo -e $RED"Error: failed to calculate events for read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
 
 if [[ "${SIGTK_PLOT_MTD}" == "matlab" ]]; then
 

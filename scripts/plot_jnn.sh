@@ -24,8 +24,8 @@ ${SLOW5TOOLS} --version &> /dev/null || { echo -e $RED"slow5tools not found! Eit
 
 rm -f sigtk_${read_id}.tmp sigtk_${read_id}.jnn.tmp
 
-slow5tools get --to slow5 ${FILE} ${read_id} | grep -v '^[#@]' | awk '{print $8}' > sigtk_${read_id}.tmp || { echo -e $RED"Error: failed to get read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
-sigtk jnn ${FILE} ${read_id} -n | cut -f 3,4 | tr ',;' '\t'  > sigtk_${read_id}.jnn.tmp || { echo -e $RED"Error: failed to apply jnn for read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
+${SLOW5TOOLS} get --to slow5 ${FILE} ${read_id} | grep -v '^[#@]' | awk '{print $8}' > sigtk_${read_id}.tmp || { echo -e $RED"Error: failed to get read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
+${SIGTK} jnn ${FILE} ${read_id} -n | cut -f 3,4 | tr ',;' '\t'  > sigtk_${read_id}.jnn.tmp || { echo -e $RED"Error: failed to apply jnn for read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
 COUNT=$(cut -f1  sigtk_${read_id}.jnn.tmp);
 [ "$COUNT" == "0" ] && { echo -e $RED"Error: no segments found for read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
 

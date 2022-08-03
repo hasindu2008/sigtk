@@ -24,8 +24,8 @@ ${SLOW5TOOLS} --version &> /dev/null || { echo -e $RED"slow5tools not found! Eit
 
 rm -f sigtk_${read_id}.tmp sigtk_${read_id}.prefix.tmp
 
-slow5tools get --to slow5 ${FILE} ${read_id} | grep -v '^[#@]' | awk '{print $8}' > sigtk_${read_id}.tmp || { echo -e $RED"Error: failed to get read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
-sigtk prefix ${FILE} ${read_id} -n | cut -f 3,4,5,6 | sed 's/\./-1/g'  > sigtk_${read_id}.prefix.tmp || { echo -e $RED"Error: failed to get segments for read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
+${SLOW5TOOLS} get --to slow5 ${FILE} ${read_id} | grep -v '^[#@]' | awk '{print $8}' > sigtk_${read_id}.tmp || { echo -e $RED"Error: failed to get read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
+${SIGTK} prefix ${FILE} ${read_id} -n | cut -f 3,4,5,6 | sed 's/\./-1/g'  > sigtk_${read_id}.prefix.tmp || { echo -e $RED"Error: failed to get segments for read_id ${read_id} from ${FILE}"$NORMAL; exit 1;}
 
 if [[ "${SIGTK_PLOT_MTD}" == "matlab" ]]; then
 

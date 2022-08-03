@@ -346,10 +346,12 @@ jnn_pair_t find_polya(const float *raw, int64_t nsample, float top, float bot){
     jnn_pair_t *segs = jnn_pa(raw,nsample,param,&seg_i);
 
     if(segs){
-        assert(seg_i > 0);
-        p = segs[0];
+        if(seg_i > 0){
+            p = segs[0];
+        }
         free(segs);
     }
+
 
     return p;
 }
