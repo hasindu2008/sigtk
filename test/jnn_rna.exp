@@ -1,4 +1,4 @@
-read_id	len_raw_signal	num_seg	segs
+read_id	len_raw_signal	num_seg	seg
 00213403-4297-4f03-8412-3cc8b9cb845a	89629	1	989,2016;
 00acf97d-7374-4587-ae97-a6605281cbbf	84181	0	.
 01046039-3547-46be-bfec-9884cd9ecb7d	81346	1	5903,7429;

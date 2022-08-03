@@ -108,6 +108,7 @@ Prints signal statistics.
 
 ## prefix
 
+Under construction. Will change anytime.
 Finds prefix segments in a raw signal such as adaptor and polyA.
 
 |Col|Type  |Name            |Description                                                            |
@@ -130,7 +131,9 @@ If `--print-stat` is printed, following additional columns will be printed.
 
 ## jnn
 
-print segments found using JNN segmenter.
+Under construction. Will change anytime.
+
+Print segments found using JNN segmenter.
 
 |Col|Type  |Name            |Description                                                            |
 |--:|:----:|:------:        |:-----------------------------------------                             |
