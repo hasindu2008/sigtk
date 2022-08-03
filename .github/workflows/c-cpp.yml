@@ -28,11 +28,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: install packages
-      run: apt-get update && apt-get install -y zlib1g-dev gcc g++ autoconf automake make
+      run: apt-get update && apt-get install -y zlib1g-dev gcc g++ autoconf automake make valgrind
     - name: build
       run: make -j8
     - name: test
       run: make test
+    - name: test mem
+      run: scripts/test.sh mem
   ubuntu_18:
     name: Ubuntu 18
     runs-on: ubuntu-18.04
@@ -82,8 +84,6 @@ jobs:
         printenv >> $GITHUB_ENV
     - name: build
       run: make CC=icc -j8
-    - name: test
-      run: make test CC=icc
   os_x_11:
     name: OSX 11
     runs-on: macos-11
