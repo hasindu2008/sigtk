@@ -29,13 +29,13 @@ echo "RNA sref"
 ex ./sigtk sref test/rnasequin_sequences_2.4.fa --rna > a.tsv || die "Running the tool failed"
 diff -q test/sref_rna.exp a.tsv  || die "diff failed"
 
-echo "DNA seg"
-ex ./sigtk seg test/sp1_dna.blow5 > test/seg_dna.txt || die "Running the tool failed"
-diff test/seg_dna.txt test/seg_dna.exp
+echo "DNA prefix"
+ex ./sigtk prefix test/sp1_dna.blow5 > test/prefix_dna.txt || die "Running the tool failed"
+diff test/prefix_dna.txt test/prefix_dna.exp
 
-echo "RNA seg"
-ex ./sigtk seg test/sequin_rna.blow5 > test/seg_rna.txt || die "Running the tool failed"
-diff -q test/seg_rna.txt test/seg_rna.exp  || die "diff failed"
+echo "RNA prefix"
+ex ./sigtk prefix test/sequin_rna.blow5 > test/prefix_rna.txt || die "Running the tool failed"
+diff -q test/prefix_rna.txt test/prefix_rna.exp  || die "diff failed"
 
 echo "DNA jnn"
 ex ./sigtk jnn test/sp1_dna.blow5 > test/jnn_dna.txt || die "Running the tool failed"

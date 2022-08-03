@@ -13,11 +13,9 @@
 #include "sigtk.h"
 #include "stat.h"
 
-extern int compact;
+void print_events(char *rid, event_table et, slow5_rec_t *rec, opt_t opt){
 
-void print_events(char *rid, event_table et, slow5_rec_t *rec){
-
-    if(compact){
+    if(opt.compact){
         printf("%s\t%ld\t", rid, rec->len_raw_signal);
         if(et.n){
             assert(et.event[et.n-1].start < rec->len_raw_signal);
@@ -62,8 +60,8 @@ void print_events(char *rid, event_table et, slow5_rec_t *rec){
 
 }
 
-void event_hdr(){
-    if(compact){
+void event_hdr(opt_t opt){
+    if(opt.compact){
         printf("read_id\tlen_raw_signal\traw_start\traw_end\tnum_event\tevents\n");
     } else {
         printf("read_id\tevent_idx\traw_start\traw_end\tevent_mean\tevent_std\n");
@@ -71,20 +69,20 @@ void event_hdr(){
 }
 
 
-void event_func(slow5_rec_t *rec, int8_t rna){
+void event_func(slow5_rec_t *rec, opt_t opt){
 
     float *current_signal = signal_in_picoamps(rec);
     //trim(current_signal, rec->len_raw_signal);
 
-    event_table et = getevents(rec->len_raw_signal, current_signal, rna);
+    event_table et = getevents(rec->len_raw_signal, current_signal, opt.rna);
 
-    print_events(rec->read_id,et, rec);
+    print_events(rec->read_id,et, rec, opt);
 
     free(current_signal);
     free(et.event);
 }
 
-void pa_func(slow5_rec_t *rec, int8_t rna){
+void pa_func(slow5_rec_t *rec, opt_t opt){
 
     float *current_signal = signal_in_picoamps(rec);
 
@@ -107,25 +105,25 @@ void pa_hdr(){
     printf("read_id\tlen_raw_signal\tpa\n");
 }
 
-void jnn_func(slow5_rec_t *rec, int8_t rna){
+void jnn_func(slow5_rec_t *rec, opt_t opt){
     printf("%s\t",rec->read_id);
 
     uint64_t len_raw_signal = rec->len_raw_signal;
     printf("%ld\t",len_raw_signal);
 
-    jnn_print(rec, compact);
+    jnn_print(rec, opt.compact);
     printf("\n");
 
 }
 void jnn_hdr(){
-    printf("read_id\tlen_raw_signal\tnum_seg\tsegs\n");
+    printf("read_id\tlen_raw_signal\tnum_seg\tseg\n");
 }
 
 void stat_hdr(){
     printf("read_id\tlen_raw_signal\traw_mean\tpa_mean\traw_std\tpa_std\traw_median\tpa_median\n");
 }
 
-void stat_func(slow5_rec_t *rec, int8_t rna){
+void stat_func(slow5_rec_t *rec, opt_t opt){
     printf("%s\t",rec->read_id);
 
     uint64_t len_raw_signal = rec->len_raw_signal;
@@ -160,11 +158,15 @@ void stat_func(slow5_rec_t *rec, int8_t rna){
     printf("\n");
 }
 
-void seg_hdr(){
-    printf("read_id\tlen_raw_signal\tadapt_start\tadapt_end\tpolya_start\tpolya_end\tadapt_mean\tadapt_std\tadapt_median\tpolya_mean\tpolya_std\tpolya_median\n");
+void prefix_hdr(opt_t opt){
+    printf("read_id\tlen_raw_signal\tadapt_start\tadapt_end\tpolya_start\tpolya_end");
+    if(opt.p_stat){
+        printf("\tadapt_mean\tadapt_std\tadapt_median\tpolya_mean\tpolya_std\tpolya_median");
+    }
+    printf("\n");
 }
 
-void seg_func(slow5_rec_t *rec, int8_t rna){
+void prefix_func(slow5_rec_t *rec, opt_t opt){
     int64_t len_raw_signal = rec->len_raw_signal;
     printf("%s\t%ld\t",rec->read_id, len_raw_signal);
     jnn_pair_t p=find_adaptor(rec);
@@ -185,7 +187,7 @@ void seg_func(slow5_rec_t *rec, int8_t rna){
 
 
         jnn_pair_t polya;
-        if(rna){
+        if(opt.rna){
             polya=find_polya(adapt_end,len_raw_signal-p.y, m_a+30+20,m_a+30-20);
         } else {
             polya.x = -1;
@@ -193,20 +195,22 @@ void seg_func(slow5_rec_t *rec, int8_t rna){
         }
         if(polya.y > 0){
             assert(polya.y + p.y < len_raw_signal);
-            printf("%ld\t%ld\t",polya.x+p.y, polya.y+p.y);
+            printf("%ld\t%ld",polya.x+p.y, polya.y+p.y);
         }else{
-            printf(".\t.\t");
+            printf(".\t.");
         }
 
-        printf("%f\t%f\t%f\t",m_a, s_a, k_a);
+        if(opt.p_stat){
+            printf("\t%f\t%f\t%f\t",m_a, s_a, k_a);
 
-        if(polya.y > 0){
-            float m_poly = meanf(&current[polya.x+p.y],polya.y-polya.x);
-            float s_poly = stdvf(&current[polya.x+p.y],polya.y-polya.x);
-            float k_poly = medianf(&current[polya.x+p.y],polya.y-polya.x);
-            printf("%f\t%f\t%f\t",m_poly, s_poly, k_poly);
-        } else {
-            printf(".\t.\t.");
+            if(polya.y > 0){
+                float m_poly = meanf(&current[polya.x+p.y],polya.y-polya.x);
+                float s_poly = stdvf(&current[polya.x+p.y],polya.y-polya.x);
+                float k_poly = medianf(&current[polya.x+p.y],polya.y-polya.x);
+                printf("\t%f\t%f\t%f\t",m_poly, s_poly, k_poly);
+            } else {
+                printf("\t.\t.\t.");
+            }
         }
 
         free(current);

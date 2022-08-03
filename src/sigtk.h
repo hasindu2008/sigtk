@@ -108,6 +108,13 @@ typedef struct {
     //float log_scaled_var;
 } scalings_t;
 
+typedef struct{
+    int8_t rna;
+    int8_t compact;
+    int8_t p_stat;
+}opt_t;
+
+
 /* misc */
 float *signal_in_picoamps(slow5_rec_t *rec);
 int8_t drna_detect(slow5_file_t *sp);

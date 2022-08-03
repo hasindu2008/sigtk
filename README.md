@@ -52,6 +52,16 @@ sigtk <subtool> reads.blow5 read_id1 read_id2 ..
 
 By default, a tab-delimited text file with the first row being the header is printed. You can suppress the header using `-n` flag for easy use with command line tools such as *awk*. Some subtools can be invoked with *-c* for compact output that prints data in a custom encoding explained in each subtool if relevant. These subtools automatically detect if raw signal data in for DNA or RNA if applicable.
 
+## pa
+
+Prints the raw signal in pico-amperes.
+
+|Col|Type  |Name            |Description                                                            |
+|--:|:----:|:------:        |:-----------------------------------------                             |
+|1  |string|read_id         |Read identifier name                                                   |
+|2  |int   |len_raw_signal  |The number of samples in the raw signal                                |
+|3  |float*|pa              |Comma separated Raw signal in pico amperes                             |
+
 ## event
 
 Event segmentation is based on the method in Oxford Nanopore's [Scrappie basecaller](https://github.com/nanoporetech/scrappie).
@@ -96,16 +106,55 @@ Prints signal statistics.
 |7  |int   |raw_median      |Median of raw signal values                                            |
 |8  |float |pa_median       |Mean of pico-amperes scaled signal                                     |
 
+## prefix
 
-## pa
-
-Prints the raw signal in pico-amperes.
+Finds prefix segments in a raw signal such as adaptor and polyA.
 
 |Col|Type  |Name            |Description                                                            |
 |--:|:----:|:------:        |:-----------------------------------------                             |
 |1  |string|read_id         |Read identifier name                                                   |
 |2  |int   |len_raw_signal  |The number of samples in the raw signal                                |
-|3  |float*|pa              |Comma separated Raw signal in pico amperes                             |
+|3  |int   |adapt_start     |Raw signal start index of the adaptor                                  |
+|4  |int   |adapt_end       |Raw signal end index of the adaptor                                    |
+|5  |int   |polya_start     |Raw signal start index of the polyA tail                               |
+|6  |int   |polya_end       |Raw signal end index of the polyA tail                                 |
+
+If `--print-stat` is printed, following additional columns will be printed.
+
+|float |adapt_mean      |Mean of pico-amperes scaled signal of the adaptor                      |
+|float |adapt_std       |Standard deviation of pico-amperes scaled signal of the adaptor        |
+|float |adapt_median    |Median of pico-amperes scaled signal of the adaptor                    |
+|float |polya_mean      |Mean of pico-amperes scaled signal of the polyA tail                   |
+|float |polya_std       |Standard deviation of pico-amperes scaled signal of the polyA tail     |
+|float |polya_median    |Median of pico-amperes scaled signal of the polyA                      |
+
+## jnn
+
+print segments found using JNN segmenter.
+
+|Col|Type  |Name            |Description                                                            |
+|--:|:----:|:------:        |:-----------------------------------------                             |
+|1  |string|read_id         |Read identifier name                                                   |
+|2  |int   |len_raw_signal  |The number of samples in the raw signal                                |
+|3  |int   |num_seg         |Number of segments found                                               |
+|4  |string|seg             |List of segments as explained below                                    |
+
+```
+...............|..........|..............|..........|............   <- signal and segments
+              100        110            201        212              <- signal index (0-based)
+```
+Segments will be noted as below:
+100,110;201,212;
+
+If `-c` is specified, output will be in the following short notation by using relative offsets.
+```
+...............|..........|..............|..........|............   <- signal and segments
+              100        110            201        212              <- signal index (0-based)
+
+               <---10----><-----91------><---11----->
+```
+
+100H,10,91H,11,
 
 
 ## Acknowledgement
