@@ -122,6 +122,8 @@ Finds prefix segments in a raw signal such as adaptor and polyA.
 
 If `--print-stat` is printed, following additional columns will be printed.
 
+|Type  |Name            |Description                                                            |
+|:----:|:------:        |:-----------------------------------------                             |
 |float |adapt_mean      |Mean of pico-amperes scaled signal of the adaptor                      |
 |float |adapt_std       |Standard deviation of pico-amperes scaled signal of the adaptor        |
 |float |adapt_median    |Median of pico-amperes scaled signal of the adaptor                    |
