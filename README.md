@@ -1,6 +1,6 @@
 # sigtk
 
-A simple toolkit written for performing various operations on nanopore raw signal data. This is still in a very premature development state. The command line interface is therefore subject to frequent change. Currently, *sigtk* it is single threaded and has not been optimised for performance. The intended use is to perform operations on relatively smaller datasets for learning purposes and eyeballing.
+A simple toolkit written for performing various operations on nanopore raw signal data. This is still in a very premature development stage and thus anticipate changes. Currently, *sigtk* is single threaded and has not been optimised for performance. The intended use is to perform operations on relatively smaller datasets for learning purposes and eyeballing.
 
 ## Building
 
@@ -24,11 +24,11 @@ On OS X : brew install zlib
 
 ## synthetic reference (sref)
 
-Prints a synthetic reference signal for a given reference genome using traditional pore models. The 6-mer DNA pore-model used is [here](test/models/r9.4_450bps.nucleotide.6mer.template.model) and the 5-mer RNA pore-model is [here](r9.4_70bps.u_to_t_rna.5mer.template.model).
+Prints a synthetic reference signal for a given reference genome using traditional pore models. The 6-mer DNA pore-model used is [here](test/models/r9.4_450bps.nucleotide.6mer.template.model) and the 5-mer RNA pore-model is [here](test/models/r9.4_70bps.u_to_t_rna.5mer.template.model).
 
 Usage:  `sigtk sref reference.fa`
 
-Specify `--rna` to use the RNA pore-model. Output is a tab-delimited text file with each row being a reference contig (one for + and another for - in case of DNA) and the columns being as described below:
+Specify `--rna` to use the RNA pore-model. Output is a tab-delimited text file with each row being a reference contig (one for + and another for - when DNA; only for + when RNA) and the columns being as described below:
 
 |Col|Type  |Name            |Description                                                        |
 |--:|:----:|:------:        |:-----------------------------------------                         |
@@ -41,7 +41,7 @@ Specify `--rna` to use the RNA pore-model. Output is a tab-delimited text file w
 
 ## Per-record raw-signal operations
 
-The subtools in this section perform various operations on individual raw-signal records in a BLOW5/SLOW5 file. They can be used in one of the following forms:
+The subtools in this section perform various operations on individual raw-signal records in a [BLOW5/SLOW5 file](https://www.nature.com/articles/s41587-021-01147-4). Those subtools can be used in one of the following forms:
 
 ```
 # To perform subtool operation on all reads in a BLOW5 file
@@ -50,7 +50,7 @@ sigtk <subtool> reads.blow5
 sigtk <subtool> reads.blow5 read_id1 read_id2 ..
 ```
 
-By default, a tab-delimited text file with the first row being the header is printed. You can suppress the header using `-n` flag for easy use with command line tools such as *awk*. Some subtools can be invoked with *-c* for compact output that prints data in a custom encoding explained in each subtool if relevant. These subtools automatically detect if raw signal data in for DNA or RNA if applicable.
+By default, a tab-delimited text file with the first row being the header is printed. You can suppress the header using `-n` flag, for easy use with command line tools such as *awk*. Some subtools can be invoked with *-c* for compact output that prints data in a custom encoding (explained in each subtool, if relevant). These subtools automatically detect if raw signal data in for DNA or RNA, if applicable.
 
 ## pa
 
@@ -88,8 +88,8 @@ To obtain a condensed output that consumes less space and one record per row, sp
 |5  |int   |num_event       |Number of events                                                       |
 |6  |int*  |events          |Comma separated event lengths (based on no. raw signal samples)       |
 
-The event 0 starts at raw signal index `raw_start` (0-based; BED-like; closed) and ends at `raw_start+event[0]` (0-based; BED-like; open).
-The event 1 starts at raw signal index `raw_start+event[0]` (0-based; BED-like; closed) and ends at `raw_start+event[0]+event[1]` (0-based; BED-like; open). Likewise, the events can be reconstructed by using the cumulative sum of `events`.
+The event 0 starts at raw signal index `raw_start` (0-based; BED-like; closed) and ends at `raw_start+events[0]` (0-based; BED-like; open).
+The event 1 starts at raw signal index `raw_start+events[0]` (0-based; BED-like; closed) and ends at `raw_start+events[0]+events[1]` (0-based; BED-like; open). Likewise, the events can be reconstructed by using the cumulative sum of `events`.
 
 ## stat
 
@@ -111,4 +111,4 @@ Prints signal statistics.
 
 The event detection code is from Oxford Nanopore's [Scrappie basecaller](https://github.com/nanoporetech/scrappie).
 The pore-models are from [Nanopolish](https://github.com/jts/nanopolish).
-Some code snippets have been taken from [Minimap2](https://github.com/lh3/minimap2), [Samtools](http://samtools.sourceforge.net/). The name of the tool *sigtk* in signal-space was inspired by [seqtk](https://github.com/lh3/seqtk) in base-space. Kseq and ksort from [klib](https://github.com/attractivechaos/klib) are used. Segmentation method (aka jnn) was adapted from [SquiggleKit](https://github.com/Psy-Fer/SquiggleKit) and [deeplexicon](https://github.com/Psy-Fer/deeplexicon).
+Code snippets have been taken from [Minimap2](https://github.com/lh3/minimap2) and [Samtools](http://samtools.sourceforge.net/). The name of the tool *sigtk* in signal-space was inspired by [seqtk](https://github.com/lh3/seqtk) in base-space. Kseq and ksort from [klib](https://github.com/attractivechaos/klib) are used. Segmentation method (aka jnn) was adapted from [SquiggleKit](https://github.com/Psy-Fer/SquiggleKit) and [deeplexicon](https://github.com/Psy-Fer/deeplexicon).
