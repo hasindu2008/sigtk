@@ -51,8 +51,8 @@ int print_usage(FILE *fp_help){
     fprintf(fp_help,"         pa        print raw signal in pico-amperes\n");
     fprintf(fp_help,"         event     segment raw signal into events\n");
     fprintf(fp_help,"         stat      print statistics of the raw signal\n");
-    fprintf(fp_help,"         prefix    prefix segments such as adaptor and polyA\n");
-    fprintf(fp_help,"         jnn       print segments found using JNN segmenter\n");
+    //fprintf(fp_help,"         prefix    prefix segments such as adaptor and polyA\n");
+    //fprintf(fp_help,"         jnn       print segments found using JNN segmenter\n");
     if(fp_help==stderr){
         exit(EXIT_FAILURE);
     }

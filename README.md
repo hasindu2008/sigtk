@@ -106,9 +106,10 @@ Prints signal statistics.
 |7  |int   |raw_median      |Median of raw signal values                                            |
 |8  |float |pa_median       |Mean of pico-amperes scaled signal                                     |
 
+
 ## prefix
 
-Under construction. Will change anytime.
+Under construction. Will change anytime. Only for direct RNA at the moment.
 Finds prefix segments in a raw signal such as adaptor and polyA.
 
 |Col|Type  |Name            |Description                                                            |
@@ -148,8 +149,8 @@ Print segments found using JNN segmenter.
 ...............|..........|..............|..........|............   <- signal and segments
               100        110            201        212              <- signal index (0-based)
 ```
-Segments will be noted as below:
-100,110;201,212;
+Segments will be noted as:
+`100,110;201,212;`
 
 If `-c` is specified, output will be in the following short notation by using relative offsets.
 ```
@@ -159,7 +160,7 @@ If `-c` is specified, output will be in the following short notation by using re
                <---10----><-----91------><---11----->
 ```
 
-100H,10,91H,11,
+`100H10,91H11,`
 
 
 ## Acknowledgement

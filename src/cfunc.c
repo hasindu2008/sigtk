@@ -111,7 +111,7 @@ void jnn_func(slow5_rec_t *rec, opt_t opt){
     uint64_t len_raw_signal = rec->len_raw_signal;
     printf("%ld\t",len_raw_signal);
 
-    jnn_print(rec, opt.compact);
+    jnn_print(rec, opt.compact, opt.rna);
     printf("\n");
 
 }
