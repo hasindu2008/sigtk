@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#This is a dirty script to plot the alignment of a signal to a reference using matlab
+#mainly for my own use
+
 #scripts/plot_align.sh test/batch0.blow5 1d72c1af-0e12-4326-9310-407a15fa7b2b test/batch0.fastq
 
 set -e
@@ -25,7 +28,6 @@ ${SLOW5TOOLS} --version &> /dev/null || { echo -e $RED"slow5tools not found! Eit
 [ -z ${F5C} ] && export F5C=f5c
 ${F5C} --version &> /dev/null || { echo -e $RED"f5c not found! Either put f5c under path or set F5C variable, e.g.,export F5C=/path/to/f5c"$NORMAL; exit 1;}
 samtools --version &> /dev/null || { echo -e $RED"samtools not found in path!"$NORMAL; exit 1;}
-
 
 rm -f sigtk_${read_id}.tmp sigtk_${read_id}.events.tmp sigtk_${read_id}.fasta sigtk_${read_id}.blow5 sigtk_${read_id}.resquigged.tmp sigtk_${read_id}_bases.tmp
 
@@ -87,8 +89,17 @@ if [[ "${SIGTK_PLOT_MTD}" == "matlab" ]]; then
 
     %kmers
     base=convertStringsToChars(base)';
+
     for j=1:length(base)-${KMER_SIZE}+1
-        kmers{j}=strcat(char(base(j)),char(base(j+1)),char(base(j+2)),char(base(j+3)),char(base(j+4)),char(base(j+5)));
+        if(${KMER_SIZE}==6)
+            kmers{j}=strcat(char(base(j)),char(base(j+1)),char(base(j+2)),char(base(j+3)),char(base(j+4)),char(base(j+5)));
+        else
+            kmers{j}=strcat(char(base(j)),char(base(j+1)),char(base(j+2)),char(base(j+3)),char(base(j+4)));
+        end
+    end
+
+    if(${KMER_SIZE}==5)
+        kmers=flip(kmers);
     end
     h=text(x,y,cellstr(kmers),'FontSize',7);
     set(h,'Rotation',90);
