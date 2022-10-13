@@ -38,7 +38,7 @@ int repmain(int argc, char* argv[]){
             int c2 = 0;
             int c3 = 0;
             for(uint64_t i=0;i<len_raw_signal;i++){
-                if (rec->raw_signal[i] == 455){
+                if (rec->raw_signal[i] == sample){
                     mark = 1;
                     count++;
                     c2++;
