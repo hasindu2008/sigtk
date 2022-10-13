@@ -105,6 +105,71 @@ void pa_hdr(){
     printf("read_id\tlen_raw_signal\tpa\n");
 }
 
+
+
+void count_func(slow5_rec_t *rec, opt_t opt){
+
+    uint64_t len_raw_signal = rec->len_raw_signal;
+
+    int count_g[10] = {0};
+
+    int mark = 0;
+    int count = 0;
+    int c2 = 0;
+    int c3 = 0;
+    for(uint64_t i=0;i<len_raw_signal;i++){
+        if (rec->raw_signal[i] == 455){
+            mark = 1;
+            count++;
+            c2++;
+        } else {
+            if(mark){
+                if(count <10 ){
+                    count_g[count]++;
+                } else {
+                    count_g[9]++;
+                }
+            }
+            mark = 0;
+            count =0;
+        }
+    }
+    if(mark){
+        if(count <10 ){
+            count_g[count]++;
+        } else {
+            count_g[9]++;
+        }
+    }
+
+    printf("%s\t",rec->read_id);
+    for(int i=1;i<10;i++){
+        if (i==9) {
+            printf("%d",count_g[i]);
+        } else {
+            printf("%d\t",count_g[i]);
+        }
+        c3 += count_g[i]*i;
+    }
+    if(count_g[9]==0 && c2!=c3){
+        fprintf(stderr,"ASSERTION FAIL: %d\t%d\n",c2,c3);
+        exit(EXIT_FAILURE);
+    } else {
+        if(c2<c3){
+            fprintf(stderr,"ASSERTION2 FAIL: %d\t%d\n",c2,c3);
+            exit(EXIT_FAILURE);
+
+        }
+    }
+    printf("\n");
+
+}
+
+void count_hdr(){
+    printf("read_id\tcount_1\tcount_2\tcount_3\tcount_4\tcount_5\tcount_6\tcount_7\tcount_8\tcount_9+\n");
+}
+
+
 void jnn_func(slow5_rec_t *rec, opt_t opt){
     printf("%s\t",rec->read_id);
 

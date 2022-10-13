@@ -42,6 +42,7 @@ void sig_handler(int sig) {
 
 int cmain(int argc, char* argv[], char *mode);
 int srefmain(int argc, char* argv[]);
+int repmain(int argc, char* argv[]);
 
 int print_usage(FILE *fp_help){
 
@@ -79,8 +80,11 @@ int main(int argc, char* argv[]){
     else if (strcmp(argv[1],"sref")==0){
         ret=srefmain(argc-1, argv+1);
     }
-    else if (strcmp(argv[1],"event")==0 || strcmp(argv[1],"stat")==0 || strcmp(argv[1],"prefix")==0 || strcmp(argv[1],"pa")==0 || strcmp(argv[1],"jnn")==0){
+    else if (strcmp(argv[1],"event")==0 || strcmp(argv[1],"stat")==0 || strcmp(argv[1],"prefix")==0 || strcmp(argv[1],"pa")==0 || strcmp(argv[1],"jnn")==0 || strcmp(argv[1],"count")==0){
         ret=cmain(argc-1, argv+1, argv[1]);
+    }
+    else if (strcmp(argv[1],"rep")==0){
+        ret=repmain(argc-1, argv+1);
     }
     else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"sigtk %s\n",SIGTK_VERSION);
