@@ -43,6 +43,7 @@ void sig_handler(int sig) {
 int cmain(int argc, char* argv[], char *mode);
 int srefmain(int argc, char* argv[]);
 int ssmain(int argc, char* argv[]);
+int entmain(int argc, char* argv[]);
 
 int print_usage(FILE *fp_help){
 
@@ -55,6 +56,7 @@ int print_usage(FILE *fp_help){
     //fprintf(fp_help,"         prefix    prefix segments such as adaptor and polyA\n");
     //fprintf(fp_help,"         jnn       print segments found using JNN segmenter\n");
     //fprintf(fp_help,"         ss        ss string conversion \n");
+    //fprintf(fp_help,"         ent        ss string conversion \n");
     if(fp_help==stderr){
         exit(EXIT_FAILURE);
     }
@@ -86,6 +88,9 @@ int main(int argc, char* argv[]){
     }
     else if (strcmp(argv[1],"ss")==0){
         ret=ssmain(argc-1, argv+1);
+    }
+    else if (strcmp(argv[1],"ent")==0){
+        ret=entmain(argc-1, argv+1);
     }
     else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"sigtk %s\n",SIGTK_VERSION);
