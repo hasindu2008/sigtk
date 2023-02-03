@@ -54,3 +54,14 @@ If `-c` is specified, output will be in the following short notation by using re
 
 `100H10,91H11,`
 
+## ent
+
+Calculates shannon entropy for reads in a given S/BLOW5 file.
+
+|Col|Type  |Name            |Description                                                            |
+|--:|:----:|:------:        |:-----------------------------------------                             |
+|1  |string|read_id         |Read identifier name                                                   |
+|2  |float   |raw_ent  |entropy of raw signal samples                                |
+|3  |float   |delta_ent     |entropy after zig-zag delta                                  |
+|4  |float   |byte_ent       |entropy after splitting and storing least significant byte and most significant byte of the signal samples separately: ent(LSB)+ent(MSB)                                    |
+

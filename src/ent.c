@@ -19,6 +19,7 @@ static struct option long_options[] = {
     {"verbose", required_argument, 0, 'v'},        //0 verbosity level [1]
     {"help", no_argument, 0, 'h'},                 //1
     {"version", no_argument, 0, 'V'},              //2
+    {"no-header",no_argument,0,'n'},               //3 suppress header
 };
 
 double entropy(int16_t *raw_signal, uint64_t len_raw_signal){
@@ -33,8 +34,6 @@ double entropy(int16_t *raw_signal, uint64_t len_raw_signal){
         //double pA = TO_PICOAMPS(rec->raw_signal[i],rec->digitisation,rec->offset,rec->range);
         //printf("%f ",pA);
     }
-
-
 
     double ent = 0;
     for(uint64_t i=0;i<65536;i++){
@@ -69,7 +68,7 @@ int entmain(int argc, char* argv[]) {
     int32_t c = -1;
 
     FILE *fp_help = stderr;
-    // int8_t hdr = 1;
+    int8_t hdr = 1;
 
     // opt_t opt = {0,0,0};
 
@@ -80,13 +79,17 @@ int entmain(int argc, char* argv[]) {
             exit(EXIT_SUCCESS);
         } else if (c=='h'){
             fp_help = stdout;
+        } else if (c=='n'){
+            hdr = 0;
         }
     }
 
-
     if (argc-optind!=1 || fp_help == stdout) {
         fprintf(fp_help,"Usage: sigtk ent a.blow5\n");
-        //fprintf(fp_help,"   --rna                      the dataset is direct RNA\n");
+        fprintf(fp_help,"\nbasic options:\n");
+        fprintf(fp_help,"   -h                         help\n");
+        fprintf(fp_help,"   -n                         suppress header\n");
+        fprintf(fp_help,"   --version                  print version\n");
         if(fp_help == stdout){
             exit(EXIT_SUCCESS);
         }
@@ -101,11 +104,16 @@ int entmain(int argc, char* argv[]) {
     slow5_rec_t *rec = NULL;
     int ret=0;
 
+    if(hdr) printf("read_id\traw_ent\tdelta_ent\tbyte_ent\n");
+
     while((ret = slow5_get_next(&rec,sp)) >= 0){
         printf("%s\t",rec->read_id);
+
+        //raw
         double ent = entropy(rec->raw_signal,rec->len_raw_signal);
         printf("%f",ent);
 
+        //zigzag delta
         int32_t *in = (int32_t *)malloc(rec->len_raw_signal*sizeof(int32_t));
         MALLOC_CHK(in);
         for(uint64_t i=0;i<rec->len_raw_signal;i++){
@@ -124,38 +132,36 @@ int entmain(int argc, char* argv[]) {
         ent = entropy(out,rec->len_raw_signal-1);
         printf("\t%f",ent);
 
-
-        int16_t *out2 = (int16_t *)malloc(rec->len_raw_signal*sizeof(int16_t)*2);
+        //byte split
+        int16_t *out2 = (int16_t *)malloc(rec->len_raw_signal*sizeof(int16_t));
         MALLOC_CHK(out2);
+        int16_t *out3 = (int16_t *)malloc(rec->len_raw_signal*sizeof(int16_t));
+        MALLOC_CHK(out3);
+
         for(uint64_t i=0;i<rec->len_raw_signal-1;i++){
             uint16_t a= out[i];
             assert(a/256 == a>>8);
-
-            //fprintf(stderr,"%d %d %d\n",a,a%256,(uint16_t)(a<<8)>>8);
             assert(a%256 == (uint16_t)(a<<8)>>8);
 
-            out2[i*2] = a/256;
-            out2[i*2+1] = a%256;
+            out2[i] = a/256;
+            out3[i] = a%256;
         }
-        ent = entropy(out2,rec->len_raw_signal*2-2);
+        ent = entropy(out2,rec->len_raw_signal-1)+entropy(out3,rec->len_raw_signal-1);
         printf("\t%f",ent);
 
         for(uint64_t i=0;i<rec->len_raw_signal-1;i++){
-            int32_t a= out2[i*2];
-            int32_t b = out2[i*2+1];
+            int32_t a= out2[i];
+            int32_t b = out3[i];
             int32_t c = a*256+b;
             assert(c==out[i]);
         }
-
-
 
         free(in);
         free(delta);
         free(out);
         free(out2);
+        free(out3);
 
-
-        //assert(total==len_raw_signal);
         printf("\n");
     }
 
@@ -167,7 +173,6 @@ int entmain(int argc, char* argv[]) {
     slow5_rec_free(rec);
 
     slow5_close(sp);
-
 
     return 0;
 
