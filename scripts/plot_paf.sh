@@ -34,6 +34,7 @@ KMER_SIZE=6
 ${SLOW5TOOLS} index ${FILE}
 ${SLOW5TOOLS} get ${FILE} ${read_id} -o sigtk_${read_id}.blow5 || { echo -e $RED"Error: slow5tools get failed"$NORMAL; exit 1;}
 ${SLOW5TOOLS} view sigtk_${read_id}.blow5 | grep "^[@#]" | grep "experiment_type" | grep "rna" && KMER_SIZE=5;
+${SLOW5TOOLS} view sigtk_${read_id}.blow5 | grep "^[@#]" | grep "sequencing_kit" | grep "114" && KMER_SIZE=9;
 echo "KMER_SIZE: ${KMER_SIZE}"
 ${SLOW5TOOLS} get --to slow5 ${FILE} ${read_id} | grep -v '^[#@]' | awk '{print $8}' > sigtk_${read_id}.tmp || { echo -e $RED"Error: slow5tools get failed"$NORMAL; exit 1;}
 ${SIGTK} event ${FILE} ${read_id} -n -c | awk '{print $3"\t"$6}' | tr ',' '\t' > sigtk_${read_id}.events.tmp || { echo -e $RED"Error: sigtk event failed"$NORMAL; exit 1;}
@@ -41,11 +42,13 @@ samtools faidx ${fastq} ${read_id} > sigtk_${read_id}.fasta || { echo -e $RED"Er
 cat ${paf} | grep ${read_id} | head -1 > sigtk_${read_id}.paf.tmp || { echo -e $RED"Error: paf file not doesnt have read"$NORMAL; exit 1;}
 sigtk ss paf2tsv sigtk_${read_id}.paf.tmp | tail -n+2 | awk '{print $3"\t"$4}' | sed 's/\./-1/g' > sigtk_${read_id}.resquigged.tmp || { echo -e $RED"Error: sigtk ss failed"$NORMAL; exit 1;}
 grep -v '^>' sigtk_${read_id}.fasta | tr -d '\n' > sigtk_${read_id}_bases.tmp || { echo -e $RED"Error: Read not found in fastq"$NORMAL; exit 1;}
-rm -f sigtk_${read_id}.fasta sigtk_${read_id}.blow5
+
+MATLAB=matlab.exe
+which matlab && MATLAB=matlab
 
 if [[ "${SIGTK_PLOT_MTD}" == "matlab" ]]; then
 
-    matlab.exe -nosplash -nodesktop -minimize -r "
+    echo "
     a=dlmread('sigtk_${read_id}.tmp'); b=dlmread('sigtk_${read_id}.events.tmp');
     %startidx=b(:,1)+1; endidx=b(:,2);
     %avg=zeros(length(a),1);
@@ -94,8 +97,10 @@ if [[ "${SIGTK_PLOT_MTD}" == "matlab" ]]; then
     for j=1:length(base)-${KMER_SIZE}+1
         if(${KMER_SIZE}==6)
             kmers{j}=strcat(char(base(j)),char(base(j+1)),char(base(j+2)),char(base(j+3)),char(base(j+4)),char(base(j+5)));
-        else
+        elseif (${KMER_SIZE}==5)
             kmers{j}=strcat(char(base(j)),char(base(j+1)),char(base(j+2)),char(base(j+3)),char(base(j+4)));
+        else
+            kmers{j}=strcat(char(base(j)),char(base(j+1)),char(base(j+2)),char(base(j+3)),char(base(j+4)),char(base(j+5)),char(base(j+6)),char(base(j+7)),char(base(j+8)));
         end
     end
 
@@ -105,7 +110,9 @@ if [[ "${SIGTK_PLOT_MTD}" == "matlab" ]]; then
     h=text(x,y,cellstr(kmers),'FontSize',7);
     set(h,'Rotation',90);
 
-    "
+    " > sigtk_${read_id}.m
+
+    $MATLAB -r "$(cat sigtk_${read_id}.m)"
 else
     echo -e $RED"SIGTK_PLOT_MTD variable not set properly! set SIGTK_PLOT_MTD to matlab. e.g.,export SIGTK_PLOT_MTD=matlab"$NORMAL
     exit 1

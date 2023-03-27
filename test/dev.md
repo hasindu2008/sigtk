@@ -65,3 +65,6 @@ Calculates shannon entropy for reads in a given S/BLOW5 file.
 |3  |float   |delta_ent     |entropy after zig-zag delta                                  |
 |4  |float   |byte_ent       |entropy after splitting and storing least significant byte and most significant byte of the signal samples separately: ent(LSB)+ent(MSB)                                    |
 
+## ss
+
+Operations to convert to/from signal alignment string (ss). See https://hasindu2008.github.io/f5c/docs/output#resquiggle-paf-output-format for explanation of ss.

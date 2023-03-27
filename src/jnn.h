@@ -80,6 +80,8 @@ typedef struct {
 } \
 
 #define SIGTK_SIZE 1000
+#define OUTLIER_MAX 1200
+#define OUTLIER_MIN 0
 
 jnn_pair_t *jnn_raw(const int16_t *raw, int64_t nsample, jnn_param_t param, int *n);
 jnn_pair_t *jnn_pa(const float *raw, int64_t nsample, jnn_param_t param, int *n);
