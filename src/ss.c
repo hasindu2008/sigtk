@@ -15,7 +15,7 @@
 #include "error.h"
 #include "sigtk.h"
 
-#define MAX_LEN_KMER 200000
+#define MAX_LEN_KMER 500000
 
 static struct option long_options[] = {
     {"verbose", required_argument, 0, 'v'},        //0 verbosity level [1]
@@ -128,10 +128,14 @@ static void ss2tsv(paf_rec_t *paf){
     int start_kmer=paf->target_start; int end_kmer=paf->target_end; int len_kmer=paf->tlen;
 
     // Raw signal start index for the corresponding k-mer and Raw signal end index for the corresponding k-mer
-    int st_raw_idx[MAX_LEN_KMER]; int end_raw_idx[MAX_LEN_KMER];
+    size_t cap = MAX_LEN_KMER;
+    int *st_raw_idx = (int *)malloc(sizeof(int)*cap);
+    MALLOC_CHK(st_raw_idx);
+    int *end_raw_idx = (int *)malloc(sizeof(int)*cap);
+    MALLOC_CHK(end_raw_idx);
 
     //intialise to -1
-    for(int i=0; i<MAX_LEN_KMER; i++){ st_raw_idx[i]=end_raw_idx[i]=-1; }
+    for(int i=0; i<cap; i++){ st_raw_idx[i]=end_raw_idx[i]=-1; }
 
     int st_k = start_kmer; int end_k = end_kmer; //if DNA, start k-kmer index is start_kmer column in paf and end k-kmer index is end_kmer column in paf
     int8_t rna = start_kmer > end_kmer ? 1 : 0; //if RNA start_kmer>end_kmer in paf
@@ -160,7 +164,14 @@ static void ss2tsv(paf_rec_t *paf){
                 end_raw_idx[i_k] = i_raw; i_raw += num;
                 st_raw_idx[i_k] = i_raw; i_k++;
             }
-            assert(i_k < MAX_LEN_KMER);
+            if(i_k >= cap){
+                st_raw_idx=(int *)realloc(st_raw_idx, sizeof(int)*cap*2);
+                MALLOC_CHK(st_raw_idx);
+                end_raw_idx=(int *)realloc(end_raw_idx, sizeof(int)*cap*2);
+                MALLOC_CHK(end_raw_idx);
+                for(int i=cap; i<cap*2; i++){ st_raw_idx[i]=end_raw_idx[i]=-1; }
+                cap *= 2;
+            }
         } else {
             if(!isdigit(*ss)){ fprintf(stderr,"Bad ss: A non-digit found when expected a digit\n"); exit(1); }
             buff[i_buff++]=*ss;
@@ -180,6 +191,8 @@ static void ss2tsv(paf_rec_t *paf){
         }
     }
 
+    free(st_raw_idx);
+    free(end_raw_idx);
 
 }
 
