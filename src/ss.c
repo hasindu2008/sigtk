@@ -15,7 +15,7 @@
 #include "error.h"
 #include "sigtk.h"
 
-#define MAX_LEN_KMER 500000
+#define MAX_LEN_KMER 2000
 
 static struct option long_options[] = {
     {"verbose", required_argument, 0, 'v'},        //0 verbosity level [1]

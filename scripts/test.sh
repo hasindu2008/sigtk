@@ -45,4 +45,12 @@ echo "RNA jnn"
 ex ./sigtk jnn test/sequin_rna.blow5 > test/jnn_rna.txt || die "Running the tool failed"
 diff -q test/jnn_rna.txt test/jnn_rna.exp  || die "diff failed"
 
+echo "DNA event"
+ex ./sigtk event test/sp1_dna.blow5 05d90f17-f4a6-4349-924c-3ffd3457a99d > test/event_dna.txt || die "Running the tool failed"
+diff -q test/event_dna.txt test/event_dna.exp  || die "diff failed"
+
+echo "RNA event"
+ex ./sigtk event -c test/sequin_rna.blow5 > test/event_rna.txt || die "Running the tool failed"
+diff -q test/event_rna.txt test/event_rna.exp  || die "diff failed"
+
 echo "Tests passed"
