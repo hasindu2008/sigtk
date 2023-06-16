@@ -22,6 +22,7 @@ OBJ = $(BUILD_DIR)/main.o \
 	  $(BUILD_DIR)/jnn.o \
 	  $(BUILD_DIR)/ss.o \
 	  $(BUILD_DIR)/ent.o \
+	  $(BUILD_DIR)/qts.o \
 
 
 PREFIX = /usr/local
@@ -70,6 +71,8 @@ $(BUILD_DIR)/ss.o: src/ss.c
 $(BUILD_DIR)/ent.o: src/ent.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
+$(BUILD_DIR)/qts.o: src/qts.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 slow5lib/lib/libslow5.a:
 	$(MAKE) -C slow5lib zstd=$(zstd) no_simd=$(no_simd) zstd_local=$(zstd_local)  lib/libslow5.a

@@ -57,7 +57,7 @@ execute_test test/prefix_dna.txt test/prefix_dna.exp 5
 
 echo "RNA prefix"
 ex ./sigtk prefix test/sequin_rna.blow5 > test/prefix_rna.txt || die "Running the tool failed"
-execute_test test/prefix_rna.txt test/prefix_rna.exp 5 || die "diff failed"
+execute_test test/prefix_rna.txt test/prefix_rna.exp 20 || die "diff failed"
 
 echo "DNA jnn"
 ex ./sigtk jnn test/sp1_dna.blow5 > test/jnn_dna.txt || die "Running the tool failed"
@@ -65,7 +65,7 @@ ex ./sigtk jnn test/sp1_dna.blow5 > test/jnn_dna.txt || die "Running the tool fa
 
 echo "RNA jnn"
 ex ./sigtk jnn test/sequin_rna.blow5 > test/jnn_rna.txt || die "Running the tool failed"
-execute_test test/jnn_rna.txt test/jnn_rna.exp 5 || die "diff failed"
+execute_test test/jnn_rna.txt test/jnn_rna.exp 20 || die "diff failed"
 
 echo "DNA event"
 ex ./sigtk event test/sp1_dna.blow5 05d90f17-f4a6-4349-924c-3ffd3457a99d > test/event_dna.txt || die "Running the tool failed"

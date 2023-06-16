@@ -44,6 +44,7 @@ int cmain(int argc, char* argv[], char *mode);
 int srefmain(int argc, char* argv[]);
 int ssmain(int argc, char* argv[]);
 int entmain(int argc, char* argv[]);
+int qtsmain(int argc, char* argv[]);
 
 int print_usage(FILE *fp_help){
 
@@ -53,10 +54,12 @@ int print_usage(FILE *fp_help){
     fprintf(fp_help,"         pa        print raw signal in pico-amperes\n");
     fprintf(fp_help,"         event     segment raw signal into events\n");
     fprintf(fp_help,"         stat      print statistics of the raw signal\n");
-    //fprintf(fp_help,"         prefix    prefix segments such as adaptor and polyA\n");
-    //fprintf(fp_help,"         jnn       print segments found using JNN segmenter\n");
-    //fprintf(fp_help,"         ss        ss string conversion \n");
-    //fprintf(fp_help,"         ent        ss string conversion \n");
+    fprintf(fp_help,"         prefix    prefix segments such as adaptor and polyA\n");
+    fprintf(fp_help,"         jnn       print segments found using JNN segmenter\n");
+    fprintf(fp_help,"         ss        ss string conversion\n");
+    fprintf(fp_help,"         ent       calculate entropies\n");
+    fprintf(fp_help,"         qts       quantise\n");
+
     if(fp_help==stderr){
         exit(EXIT_FAILURE);
     }
@@ -91,6 +94,9 @@ int main(int argc, char* argv[]){
     }
     else if (strcmp(argv[1],"ent")==0){
         ret=entmain(argc-1, argv+1);
+    }
+    else if (strcmp(argv[1],"qts")==0){
+        ret=qtsmain(argc-1, argv+1);
     }
     else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"sigtk %s\n",SIGTK_VERSION);

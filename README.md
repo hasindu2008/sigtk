@@ -52,7 +52,7 @@ sigtk <subtool> reads.blow5 read_id1 read_id2 ..
 
 By default, a tab-delimited text file with the first row being the header is printed. You can suppress the header using `-n` flag, for easy use with command line tools such as *awk*. Some subtools can be invoked with *-c* for compact output that prints data in a custom encoding (explained in each subtool, if relevant). These subtools automatically detect if raw signal data in for DNA or RNA, if applicable.
 
-## pa
+### pa
 
 Prints the raw signal in pico-amperes.
 
@@ -62,7 +62,7 @@ Prints the raw signal in pico-amperes.
 |2  |int   |len_raw_signal  |The number of samples in the raw signal                                |
 |3  |float*|pa              |Comma separated Raw signal in pico amperes                             |
 
-## event
+### event
 
 Event segmentation is based on the method in Oxford Nanopore's [Scrappie basecaller](https://github.com/nanoporetech/scrappie).
 
@@ -91,7 +91,7 @@ To obtain a condensed output that consumes less space and one record per row, sp
 The event 0 starts at raw signal index `raw_start` (0-based; BED-like; closed) and ends at `raw_start+events[0]` (0-based; BED-like; open).
 The event 1 starts at raw signal index `raw_start+events[0]` (0-based; BED-like; closed) and ends at `raw_start+events[0]+events[1]` (0-based; BED-like; open). Likewise, the events can be reconstructed by using the cumulative sum of `events`.
 
-## stat
+### stat
 
 Prints signal statistics.
 
@@ -105,6 +105,92 @@ Prints signal statistics.
 |6  |float |pa_std          |Standard deviation of pico-amperes scaled signal                       |
 |7  |int   |raw_median      |Median of raw signal values                                            |
 |8  |float |pa_median       |Mean of pico-amperes scaled signal                                     |
+
+
+## subtools under development
+
+Note that these are not much tested and the interface and output may change at anytime.
+
+### prefix
+
+Under construction. Will change anytime. Only for direct RNA at the moment.
+Finds prefix segments in a raw signal such as adaptor and polyA.
+
+|Col|Type  |Name            |Description                                                            |
+|--:|:----:|:------:        |:-----------------------------------------                             |
+|1  |string|read_id         |Read identifier name                                                   |
+|2  |int   |len_raw_signal  |The number of samples in the raw signal                                |
+|3  |int   |adapt_start     |Raw signal start index of the adaptor                                  |
+|4  |int   |adapt_end       |Raw signal end index of the adaptor                                    |
+|5  |int   |polya_start     |Raw signal start index of the polyA tail                               |
+|6  |int   |polya_end       |Raw signal end index of the polyA tail                                 |
+
+If `--print-stat` is printed, following additional columns will be printed.
+
+|Type  |Name            |Description                                                            |
+|:----:|:------:        |:-----------------------------------------                             |
+|float |adapt_mean      |Mean of pico-amperes scaled signal of the adaptor                      |
+|float |adapt_std       |Standard deviation of pico-amperes scaled signal of the adaptor        |
+|float |adapt_median    |Median of pico-amperes scaled signal of the adaptor                    |
+|float |polya_mean      |Mean of pico-amperes scaled signal of the polyA tail                   |
+|float |polya_std       |Standard deviation of pico-amperes scaled signal of the polyA tail     |
+|float |polya_median    |Median of pico-amperes scaled signal of the polyA                      |
+
+### jnn
+
+Under construction. Will change anytime. Print segments found using JNN segmenter.
+
+|Col|Type  |Name            |Description                                                            |
+|--:|:----:|:------:        |:-----------------------------------------                             |
+|1  |string|read_id         |Read identifier name                                                   |
+|2  |int   |len_raw_signal  |The number of samples in the raw signal                                |
+|3  |int   |num_seg         |Number of segments found                                               |
+|4  |string|seg             |List of segments as explained below                                    |
+
+```
+...............|..........|..............|..........|............   <- signal and segments
+              100        110            201        212              <- signal index (0-based)
+```
+Segments will be noted as:
+`100,110;201,212;`
+
+If `-c` is specified, output will be in the following short notation by using relative offsets.
+```
+...............|..........|..............|..........|............   <- signal and segments
+              100        110            201        212              <- signal index (0-based)
+
+               <---10----><-----91------><---11----->
+```
+
+`100H10,91H11,`
+
+### ent
+
+Under construction. Will change anytime. Calculates shannon entropy for reads in a given S/BLOW5 file.
+
+|Col|Type  |Name            |Description                                                            |
+|--:|:----:|:------:        |:-----------------------------------------                             |
+|1  |string|read_id         |Read identifier name                                                   |
+|2  |float   |raw_ent  |entropy of raw signal samples                                |
+|3  |float   |delta_ent     |entropy after zig-zag delta                                  |
+|4  |float   |byte_ent       |entropy after splitting and storing least significant byte and most significant byte of the signal samples separately: ent(LSB)+ent(MSB)                                    |
+
+### ss
+
+Under construction. Will change anytime. Operations to convert to/from signal alignment string (ss). See https://hasindu2008.github.io/f5c/docs/output#resquiggle-paf-output-format for explanation of ss.
+
+To convert a PAF file with ss tags to TSV, you can use:
+```
+sigtk ss paf2tsv in.paf
+```
+
+### qts
+Under construction. Will change anytime. Quantise the raw signal in a S/BLOW5 files. Takes a S/BLOW5 file as the input and writes the quantised output to a S/BLOW5 file.
+
+Currently truncates (set to 0) the LSB.
+```
+sigtk qts original.blow5 -o quantised.blow5
+```
 
 
 ## Acknowledgement
