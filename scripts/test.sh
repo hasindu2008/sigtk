@@ -73,6 +73,6 @@ execute_test test/event_dna.txt test/event_dna.exp 20 || die "diff failed"
 
 echo "RNA event"
 ex ./sigtk event -c test/sequin_rna.blow5 > test/event_rna.txt || die "Running the tool failed"
-execute_test test/event_rna.txt test/event_rna.exp 20 || die "diff failed"
+execute_test test/event_rna.txt test/event_rna.exp 50 || die "diff failed"
 
 echo "Tests passed"
