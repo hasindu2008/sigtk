@@ -3,12 +3,12 @@
 #This is a dirty script to plot the alignment of a signal to a reference using matlab
 #mainly for my own use
 
-#scripts/plot_align.sh test/batch0.blow5 1d72c1af-0e12-4326-9310-407a15fa7b2b test/batch0.fastq
+#scripts/plot_paf.sh test/batch0.blow5 1d72c1af-0e12-4326-9310-407a15fa7b2b test/batch0.paf test/batch0.fastq
 
 set -e
 
-if [ $# -ne 3 ]; then
-    echo "Usage: $0 <file.blow5> <read_id> <reads.fastq>"
+if [ $# -ne 4 ]; then
+    echo "Usage: $0 <file.blow5> <read_id> <reads.paf> <reads.fastq>"
     exit 1
 fi
 
@@ -19,19 +19,19 @@ NORMAL="\033[0;39m"
 
 FILE=${1}
 read_id=${2}
-fastq=${3}
+paf=${3}
+fastq=${4}
 
 [ -z ${SIGTK} ] && export SIGTK=sigtk
 ${SIGTK} --version &> /dev/null || { echo -e $RED"sigtk not found! Either put sigtk under path or set SIGTK variable, e.g.,export SIGTK=/path/to/sigtk"$NORMAL; exit 1;}
 [ -z ${SLOW5TOOLS} ] && export SLOW5TOOLS=slow5tools
 ${SLOW5TOOLS} --version &> /dev/null || { echo -e $RED"slow5tools not found! Either put slow5tools under path or set SLOW5TOOLS variable, e.g.,export SLOW5TOOLS=/path/to/slow5tools"$NORMAL; exit 1;}
-[ -z ${F5C} ] && export F5C=f5c
-${F5C} --version &> /dev/null || { echo -e $RED"f5c not found! Either put f5c under path or set F5C variable, e.g.,export F5C=/path/to/f5c"$NORMAL; exit 1;}
 samtools --version &> /dev/null || { echo -e $RED"samtools not found in path!"$NORMAL; exit 1;}
 
-rm -f sigtk_${read_id}.tmp sigtk_${read_id}.events.tmp sigtk_${read_id}.fasta sigtk_${read_id}.blow5 sigtk_${read_id}.blow5.idx sigtk_${read_id}.m sigtk_${read_id}.resquigged.tmp sigtk_${read_id}_bases.tmp
+rm -f sigtk_${read_id}.tmp sigtk_${read_id}.events.tmp sigtk_${read_id}.fasta sigtk_${read_id}.blow5 sigtk_${read_id}.paf.tmp
 
 KMER_SIZE=6
+${SLOW5TOOLS} index ${FILE}
 ${SLOW5TOOLS} get ${FILE} ${read_id} -o sigtk_${read_id}.blow5 || { echo -e $RED"Error: slow5tools get failed"$NORMAL; exit 1;}
 ${SLOW5TOOLS} view sigtk_${read_id}.blow5 | grep "^[@#]" | grep "experiment_type" | grep "rna" && KMER_SIZE=5;
 ${SLOW5TOOLS} view sigtk_${read_id}.blow5 | grep "^[@#]" | grep "sequencing_kit" | grep "114" && KMER_SIZE=9;
@@ -39,7 +39,8 @@ echo "KMER_SIZE: ${KMER_SIZE}"
 ${SLOW5TOOLS} get --to slow5 ${FILE} ${read_id} | grep -v '^[#@]' | awk '{print $8}' > sigtk_${read_id}.tmp || { echo -e $RED"Error: slow5tools get failed"$NORMAL; exit 1;}
 ${SIGTK} event ${FILE} ${read_id} -n -c | awk '{print $3"\t"$6}' | tr ',' '\t' > sigtk_${read_id}.events.tmp || { echo -e $RED"Error: sigtk event failed"$NORMAL; exit 1;}
 samtools faidx ${fastq} ${read_id} > sigtk_${read_id}.fasta || { echo -e $RED"Error: samtools faidx failed"$NORMAL; exit 1;}
-${F5C} resquiggle sigtk_${read_id}.fasta sigtk_${read_id}.blow5 | tail -n+2 | awk '{print $3"\t"$4}' | sed 's/\./-1/g' > sigtk_${read_id}.resquigged.tmp || { echo -e $RED"Error: f5c resquiggle failed"$NORMAL; exit 1;}
+cat ${paf} | grep ${read_id} | head -1 > sigtk_${read_id}.paf.tmp || { echo -e $RED"Error: paf file not doesnt have read"$NORMAL; exit 1;}
+sigtk ss paf2tsv sigtk_${read_id}.paf.tmp | tail -n+2 | awk '{print $3"\t"$4}' | sed 's/\./-1/g' > sigtk_${read_id}.resquigged.tmp || { echo -e $RED"Error: sigtk ss failed"$NORMAL; exit 1;}
 grep -v '^>' sigtk_${read_id}.fasta | tr -d '\n' > sigtk_${read_id}_bases.tmp || { echo -e $RED"Error: Read not found in fastq"$NORMAL; exit 1;}
 
 MATLAB=matlab.exe

@@ -29,25 +29,22 @@ ${SLOW5TOOLS} --version &> /dev/null || { echo -e $RED"slow5tools not found! Eit
 ${F5C} --version &> /dev/null || { echo -e $RED"f5c not found! Either put f5c under path or set F5C variable, e.g.,export F5C=/path/to/f5c"$NORMAL; exit 1;}
 samtools --version &> /dev/null || { echo -e $RED"samtools not found in path!"$NORMAL; exit 1;}
 
-rm -f sigtk_${read_id}.tmp sigtk_${read_id}.events.tmp sigtk_${read_id}.fasta sigtk_${read_id}.blow5 sigtk_${read_id}.blow5.idx sigtk_${read_id}.m sigtk_${read_id}.resquigged.tmp sigtk_${read_id}_bases.tmp
+rm -f sigtk_${read_id}.tmp sigtk_${read_id}.events.tmp sigtk_${read_id}.fasta sigtk_${read_id}.blow5 sigtk_${read_id}.resquigged.tmp sigtk_${read_id}_bases.tmp
 
-KMER_SIZE=6
+KMER_SIZE=9
 ${SLOW5TOOLS} get ${FILE} ${read_id} -o sigtk_${read_id}.blow5 || { echo -e $RED"Error: slow5tools get failed"$NORMAL; exit 1;}
 ${SLOW5TOOLS} view sigtk_${read_id}.blow5 | grep "^[@#]" | grep "experiment_type" | grep "rna" && KMER_SIZE=5;
-${SLOW5TOOLS} view sigtk_${read_id}.blow5 | grep "^[@#]" | grep "sequencing_kit" | grep "114" && KMER_SIZE=9;
 echo "KMER_SIZE: ${KMER_SIZE}"
 ${SLOW5TOOLS} get --to slow5 ${FILE} ${read_id} | grep -v '^[#@]' | awk '{print $8}' > sigtk_${read_id}.tmp || { echo -e $RED"Error: slow5tools get failed"$NORMAL; exit 1;}
 ${SIGTK} event ${FILE} ${read_id} -n -c | awk '{print $3"\t"$6}' | tr ',' '\t' > sigtk_${read_id}.events.tmp || { echo -e $RED"Error: sigtk event failed"$NORMAL; exit 1;}
 samtools faidx ${fastq} ${read_id} > sigtk_${read_id}.fasta || { echo -e $RED"Error: samtools faidx failed"$NORMAL; exit 1;}
-${F5C} resquiggle sigtk_${read_id}.fasta sigtk_${read_id}.blow5 | tail -n+2 | awk '{print $3"\t"$4}' | sed 's/\./-1/g' > sigtk_${read_id}.resquigged.tmp || { echo -e $RED"Error: f5c resquiggle failed"$NORMAL; exit 1;}
+${F5C} resquiggle sigtk_${read_id}.fasta sigtk_${read_id}.blow5 --kmer-model "$(dirname $(which f5c))/test/r10-models/r10.4.1_400bps.nucleotide.9mer.template.model" | tail -n+2 | awk '{print $3"\t"$4}' | sed 's/\./-1/g' > sigtk_${read_id}.resquigged.tmp || { echo -e $RED"Error: f5c resquiggle failed"$NORMAL; exit 1;}
 grep -v '^>' sigtk_${read_id}.fasta | tr -d '\n' > sigtk_${read_id}_bases.tmp || { echo -e $RED"Error: Read not found in fastq"$NORMAL; exit 1;}
-
-MATLAB=matlab.exe
-which matlab && MATLAB=matlab
+rm -f sigtk_${read_id}.fasta sigtk_${read_id}.blow5
 
 if [[ "${SIGTK_PLOT_MTD}" == "matlab" ]]; then
 
-    echo "
+    matlab.exe -nosplash -nodesktop -minimize -r "
     a=dlmread('sigtk_${read_id}.tmp'); b=dlmread('sigtk_${read_id}.events.tmp');
     %startidx=b(:,1)+1; endidx=b(:,2);
     %avg=zeros(length(a),1);
@@ -94,12 +91,10 @@ if [[ "${SIGTK_PLOT_MTD}" == "matlab" ]]; then
     base=convertStringsToChars(base)';
 
     for j=1:length(base)-${KMER_SIZE}+1
-        if(${KMER_SIZE}==6)
-            kmers{j}=strcat(char(base(j)),char(base(j+1)),char(base(j+2)),char(base(j+3)),char(base(j+4)),char(base(j+5)));
-        elseif (${KMER_SIZE}==5)
-            kmers{j}=strcat(char(base(j)),char(base(j+1)),char(base(j+2)),char(base(j+3)),char(base(j+4)));
-        else
+        if(${KMER_SIZE}==9)
             kmers{j}=strcat(char(base(j)),char(base(j+1)),char(base(j+2)),char(base(j+3)),char(base(j+4)),char(base(j+5)),char(base(j+6)),char(base(j+7)),char(base(j+8)));
+        else
+            kmers{j}=strcat(char(base(j)),char(base(j+1)),char(base(j+2)),char(base(j+3)),char(base(j+4)));
         end
     end
 
@@ -109,9 +104,7 @@ if [[ "${SIGTK_PLOT_MTD}" == "matlab" ]]; then
     h=text(x,y,cellstr(kmers),'FontSize',7);
     set(h,'Rotation',90);
 
-    " > sigtk_${read_id}.m
-
-    $MATLAB -r "$(cat sigtk_${read_id}.m)"
+    "
 else
     echo -e $RED"SIGTK_PLOT_MTD variable not set properly! set SIGTK_PLOT_MTD to matlab. e.g.,export SIGTK_PLOT_MTD=matlab"$NORMAL
     exit 1

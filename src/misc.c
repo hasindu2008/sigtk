@@ -44,6 +44,7 @@ int8_t drna_detect(slow5_file_t *sp){
         rna = 0;
     }else if (strcmp(exp,"rna")==0){
         rna = 1;
+        INFO("%s","RNA data detected.");
     } else {
         WARNING("Unknown experiment type: %s. Assuming genomic_dna", exp);
     }

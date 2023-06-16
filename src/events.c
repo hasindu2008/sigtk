@@ -257,7 +257,7 @@ static raw_table trim_and_segment_raw(raw_table rt, int trim_start, int trim_end
     rt.end -= trim_end;
 
     if (rt.start >= rt.end) {
-        free(rt.raw);
+        //free(rt.raw);
         return (raw_table){0};
     }
 

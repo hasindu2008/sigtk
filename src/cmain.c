@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
 #include "error.h"
 #include "misc.h"
 #include "sigtk.h"
@@ -21,7 +20,7 @@ static struct option long_options[] = {
     {"help", no_argument, 0, 'h'},                 //1
     {"version", no_argument, 0, 'V'},              //2
     {"output",required_argument, 0, 'o'},          //3 output to a file [stdout]
-    {"print-stat",no_argument,0,0},                     //4 print stat (for prefix)
+    {"print-stat",no_argument,0,0},                //4 print stat (for prefix)
     {"no-header",no_argument,0,'n'},               //5 suppress header
     {"compact",no_argument,0,'c'},                 //6 compact output
     {0, 0, 0, 0}};

@@ -20,6 +20,9 @@ OBJ = $(BUILD_DIR)/main.o \
 	  $(BUILD_DIR)/cfunc.o \
 	  $(BUILD_DIR)/misc.o \
 	  $(BUILD_DIR)/jnn.o \
+	  $(BUILD_DIR)/ss.o \
+	  $(BUILD_DIR)/ent.o \
+	  $(BUILD_DIR)/qts.o \
 
 
 PREFIX = /usr/local
@@ -60,6 +63,15 @@ $(BUILD_DIR)/misc.o: src/misc.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/jnn.o: src/jnn.c src/stat.h src/jnn.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/ss.o: src/ss.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/ent.o: src/ent.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/qts.o: src/qts.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 slow5lib/lib/libslow5.a:
