@@ -187,10 +187,13 @@ sigtk ss paf2tsv in.paf
 ### qts
 Under construction. Will change anytime. Quantise the raw signal in a S/BLOW5 files. Takes a S/BLOW5 file as the input and writes the quantised output to a S/BLOW5 file.
 
-Currently truncates (set to 0) the LSB.
+Usage:
 ```
 sigtk qts original.blow5 -o quantised.blow5
 ```
+
+Options:
+`-q INT` : Number of LSB bits to trucate (set to 0). Default is 1.
 
 
 ## Acknowledgement

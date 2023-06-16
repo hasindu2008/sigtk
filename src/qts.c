@@ -20,17 +20,20 @@ static struct option long_options[] = {
     {"help", no_argument, 0, 'h'},                 //1
     {"version", no_argument, 0, 'V'},              //2
     {"output",required_argument,0,'o'},            //3 output file
+    {"bits",required_argument,0,'b'},               //4 number of LSB bits to truncate
 };
 
 int qtsmain(int argc, char* argv[]) {
 
-    const char* optstring = "hVv:o:";
+    const char* optstring = "hVv:o:b:";
 
     int longindex = 0;
     int32_t c = -1;
 
     FILE *fp_help = stderr;
     char *out_fn = NULL;
+
+    int8_t b = 1; //number of LSB bits to truncate
 
     //parse the user args
     while ((c = getopt_long(argc, argv, optstring, long_options, &longindex)) >= 0) {
@@ -41,6 +44,12 @@ int qtsmain(int argc, char* argv[]) {
             fp_help = stdout;
         } else if (c=='o'){
             out_fn = optarg;
+        } else if (c=='b'){
+            b = atoi(optarg);
+            if (b < 0 || b > 16) {
+                fprintf(stderr, "Error: number of bits to truncate must be between 0 and 8\n");
+                exit(EXIT_FAILURE);
+            }
         }
     }
 
@@ -50,6 +59,7 @@ int qtsmain(int argc, char* argv[]) {
         fprintf(fp_help,"   -h                         help\n");
         fprintf(fp_help,"   -o FILE                    output file\n");
         fprintf(fp_help,"   --version                  print version\n");
+        fprintf(fp_help,"   -b INT                     number of LSB bits to truncate [%d]\n", b);
         if(fp_help == stdout){
             exit(EXIT_SUCCESS);
         }
@@ -90,7 +100,7 @@ int qtsmain(int argc, char* argv[]) {
     while((ret = slow5_get_next(&rec,sp)) >= 0){
 
         for(uint64_t i=0;i<rec->len_raw_signal;i++){
-            rec->raw_signal[i] = ( rec->raw_signal[i] >> 1 ) << 1;
+            rec->raw_signal[i] = ( rec->raw_signal[i] >> b ) << b;
         }
         //write to file
         if(slow5_write(rec, sp_w) < 0){

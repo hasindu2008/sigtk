@@ -70,8 +70,6 @@ int entmain(int argc, char* argv[]) {
     FILE *fp_help = stderr;
     int8_t hdr = 1;
 
-    // opt_t opt = {0,0,0};
-
     //parse the user args
     while ((c = getopt_long(argc, argv, optstring, long_options, &longindex)) >= 0) {
         if (c=='V'){
