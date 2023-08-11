@@ -31,7 +31,7 @@ void prefix_func(slow5_rec_t *rec, opt_t opt);
 void pa_func(slow5_rec_t *rec, opt_t opt);
 void stat_hdr();
 void prefix_hdr(opt_t opt);
-void event_hdr();
+void event_hdr(opt_t opt);
 void pa_hdr();
 void jnn_hdr();
 void jnn_func(slow5_rec_t *rec, opt_t opt);
@@ -94,7 +94,7 @@ int cmain(int argc, char* argv[], char *mode) {
     void (*func)(slow5_rec_t*, opt_t) = NULL;
 
     if (strcmp(mode,"event") == 0){
-        if(hdr) event_hdr();
+        if(hdr) event_hdr(opt);
         func = event_func;
     }else if (strcmp(mode,"stat") == 0){
         if(hdr) stat_hdr();
