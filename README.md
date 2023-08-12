@@ -4,7 +4,6 @@ A simple toolkit written for performing various operations on nanopore raw signa
 
 ## Building
 
-
 ```
 sudo apt-get install zlib1g-dev   #install zlib development libraries
 git clone https://github.com/hasindu2008/sigtk
@@ -201,3 +200,19 @@ Options:
 The event detection code is from Oxford Nanopore's [Scrappie basecaller](https://github.com/nanoporetech/scrappie).
 The pore-models are from [Nanopolish](https://github.com/jts/nanopolish).
 Code snippets have been taken from [Minimap2](https://github.com/lh3/minimap2) and [Samtools](http://samtools.sourceforge.net/). The name of the tool *sigtk* in signal-space was inspired by [seqtk](https://github.com/lh3/seqtk) in base-space. Kseq and ksort from [klib](https://github.com/attractivechaos/klib) are used. Segmentation method (aka jnn) was adapted from [SquiggleKit](https://github.com/Psy-Fer/SquiggleKit) and [deeplexicon](https://github.com/Psy-Fer/deeplexicon).
+
+## Citation
+
+sigtk highly relies on slow5lib and SLOW5 format and there is no direct publication. However, you may cite the *slow5lib/pyslow5* publication if you found sigtk useful.
+
+> Gamaarachchi, H., Samarakoon, H., Jenner, S.P. et al. Fast nanopore sequencing data analysis with SLOW5. Nat Biotechnol 40, 1026-1029 (2022). https://doi.org/10.1038/s41587-021-01147-4
+
+```
+@article{gamaarachchi2022fast,
+  title={Fast nanopore sequencing data analysis with SLOW5},
+  author={Gamaarachchi, Hasindu and Samarakoon, Hiruna and Jenner, Sasha P and Ferguson, James M and Amos, Timothy G and Hammond, Jillian M and Saadat, Hassaan and Smith, Martin A and Parameswaran, Sri and Deveson, Ira W},
+  journal={Nature biotechnology},
+  pages={1--4},
+  year={2022},
+  publisher={Nature Publishing Group}
+}
