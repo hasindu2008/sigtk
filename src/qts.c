@@ -56,7 +56,7 @@ int qtsmain(int argc, char* argv[]) {
 
     int8_t b = 1; //number of LSB bits to truncate
 
-    char *method = ""; //quantization method
+    char *method = "floor"; //quantization method
 
     //parse the user args
     while ((c = getopt_long(argc, argv, optstring, long_options, &longindex)) >= 0) {
@@ -85,7 +85,7 @@ int qtsmain(int argc, char* argv[]) {
         fprintf(fp_help,"   -o FILE                       output file\n");
         fprintf(fp_help,"   --version                     print version\n");
         fprintf(fp_help,"   -b INT                        number of LSB bits to truncate [%d]\n", b);
-        fprintf(fp_help,"   --method=[floor|round|ceil]   quantization method\n");
+        fprintf(fp_help,"   --method=[floor|round|fill-ones]   quantization method\n");
         if(fp_help == stdout){
             exit(EXIT_SUCCESS);
         }
@@ -132,14 +132,13 @@ int qtsmain(int argc, char* argv[]) {
             for(uint64_t i=0;i<rec->len_raw_signal;i++){
                 rec->raw_signal[i] = round_to_power_of_2(rec->raw_signal[i], b);
             }
-        } else if(strcmp(method, "ceil") == 0) { //fill the interested LSBs with 1s
+        } else if(strcmp(method, "fill-ones") == 0) { //fill the interested LSBs with 1s
             for(uint64_t i=0;i<rec->len_raw_signal;i++){
                 rec->raw_signal[i] = (rec->raw_signal[i]) | ((1 << b)-1);
             }
-        } else { //default - if 'method' option is not specified --> truncate b LSBs
-            for(uint64_t i=0;i<rec->len_raw_signal;i++){
-                rec->raw_signal[i] = ( rec->raw_signal[i] >> b ) << b;
-            } 
+        } else {
+            fprintf(stderr,"Unknown method for -m. Available options are floor,round,fill-ones.\n");
+            exit(EXIT_FAILURE);
         }
         
         //write to file
