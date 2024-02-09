@@ -169,7 +169,7 @@ void prefix_hdr(opt_t opt){
 void prefix_func(slow5_rec_t *rec, opt_t opt){
     int64_t len_raw_signal = rec->len_raw_signal;
     printf("%s\t%ld\t",rec->read_id, len_raw_signal);
-    jnn_pair_t p=find_adaptor(rec);
+    jnn_pair_t p=find_adaptor(rec, opt.pore);
     if(p.y > 0){
         assert(p.y<len_raw_signal);
         printf("%ld\t%ld\t",p.x, p.y);
@@ -188,7 +188,7 @@ void prefix_func(slow5_rec_t *rec, opt_t opt){
 
         jnn_pair_t polya;
         if(opt.rna){
-            polya=find_polya(adapt_end,len_raw_signal-p.y, m_a+30+20,m_a+30-20);
+            polya=find_polya(adapt_end,len_raw_signal-p.y, m_a+30+20,m_a+30-20, opt.pore);
         } else {
             polya.x = -1;
             polya.y = -1;

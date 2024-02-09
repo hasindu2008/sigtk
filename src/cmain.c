@@ -47,7 +47,7 @@ int cmain(int argc, char* argv[], char *mode) {
     FILE *fp_help = stderr;
     int8_t hdr = 1;
 
-    opt_t opt = {0,0,0};
+    opt_t opt = {0,0,0,0};
 
     //parse the user args
     while ((c = getopt_long(argc, argv, optstring, long_options, &longindex)) >= 0) {
@@ -87,6 +87,7 @@ int cmain(int argc, char* argv[], char *mode) {
         exit(EXIT_FAILURE);
     }
     opt.rna = drna_detect(slow5file);
+    opt.pore = pore_detect(slow5file);
 
     slow5_rec_t *rec = NULL;
     int ret=0;

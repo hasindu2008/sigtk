@@ -47,6 +47,10 @@
 #define SIGTK_MEAN_VAL 104.6
 #define SIGTK_STDV_VAL 20.39
 
+#define OPT_PORE_R9 0
+#define OPT_PORE_R10 1
+#define OPT_PORE_RNA004 2
+
 /* a single signal-space event : adapted from taken from scrappie */
 typedef struct {
     uint64_t start;
@@ -112,6 +116,7 @@ typedef struct{
     int8_t rna;
     int8_t compact;
     int8_t p_stat;
+    int8_t pore; //0: R9.4.1, 1: R10.4.1, 2: RNA001
 }opt_t;
 
 
@@ -119,6 +124,7 @@ typedef struct{
 float *signal_in_picoamps(slow5_rec_t *rec);
 int8_t drna_detect(slow5_file_t *sp);
 void drna_mismatch(slow5_file_t *sp, int8_t rna);
+int8_t pore_detect(slow5_file_t *sp);
 
 /* models */
 uint32_t read_model(model_t* model, const char* file, uint32_t type);
