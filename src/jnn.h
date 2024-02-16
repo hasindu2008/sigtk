@@ -90,11 +90,11 @@ typedef struct {
 } \
 
 #define JNNV2_RNA_RNA004_ADAPTOR { \
-    .std_scale = 0.5, \
+    .std_scale = 0.7, \
     .seg_dist = 1500, \
     .window = 2000, \
     .hi_thresh = 200000, \
-    .lo_thresh = 2000, \
+    .lo_thresh = 500, \
 } \
 
 #define SIGTK_SIZE 1000
