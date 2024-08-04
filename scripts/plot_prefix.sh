@@ -44,6 +44,52 @@ if [[ "${SIGTK_PLOT_MTD}" == "matlab" ]]; then
     xlabel('sample index'), ylabel('raw signal value');
     legend('raw signal', 'adaptor','polya'); title('$read_id');
     "
+elif [[ "${SIGTK_PLOT_MTD}" == "python" ]]; then
+
+export read_id=${read_id}
+
+python3 -c "
+
+import matplotlib.pyplot as plt
+import os
+import csv
+
+read_id = os.getenv('read_id')
+signal_fpath = 'sigtk_' + read_id + '.tmp'
+prefix_fpath = 'sigtk_' + read_id + '.prefix.tmp'
+
+prefix = []
+with open(prefix_fpath, 'r') as file:
+    reader = csv.reader(file, delimiter='\t')
+    for row in reader:
+        for e in row:
+            prefix.append(int(e))
+adaptor = prefix[0:2]
+polya = prefix[2:4]
+
+signal = []
+with open(signal_fpath, 'r') as file:
+    reader = csv.reader(file, delimiter=',')
+    for row in reader:
+        for e in row:
+            signal.append(int(e))
+
+
+fig, ax = plt.subplots()
+
+if adaptor[0] >= 0 & adaptor[1] >= 0 :
+    ax.axvspan(adaptor[0], adaptor[1], alpha=0.5, color='red')
+if polya[0] >= 0 & polya[1] >= 0 :
+    ax.axvspan(polya[0], polya[1], alpha=0.5, color='purple')
+
+ax.plot(signal)
+
+plt.title(read_id)
+plt.xlabel('sample index')
+plt.ylabel('raw signal value')
+plt.show()
+
+"
 else
     echo -e $RED"SIGTK_PLOT_MTD variable not set properly! set SIGTK_PLOT_MTD to matlab. e.g.,export SIGTK_PLOT_MTD=matlab"$NORMAL
     exit 1

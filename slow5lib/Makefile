@@ -19,6 +19,11 @@ else
 CFLAGS		+= -DSLOW5_USE_ZSTD
 CPPFLAGS 	+= -I $(zstd_local)
 endif
+ifeq ($(slow5_mt),1)
+CFLAGS		+= -DSLOW5_ENABLE_MT
+LDFLAGS		+= -lpthread
+endif
+
 BUILD_DIR	= lib
 
 STATICLIB	= $(BUILD_DIR)/libslow5.a
@@ -28,6 +33,7 @@ OBJ = $(BUILD_DIR)/slow5.o \
 		$(BUILD_DIR)/slow5_idx.o \
 		$(BUILD_DIR)/slow5_misc.o \
 		$(BUILD_DIR)/slow5_press.o \
+		$(BUILD_DIR)/slow5_mt.o \
 
 PREFIX = /usr/local
 VERSION = `git describe --tags`
@@ -49,16 +55,19 @@ $(SHAREDLIB): $(OBJ) $(SVBLIB)
 $(SVBLIB):
 	make -C $(SVB) no_simd=$(no_simd) libstreamvbyte.a
 
-$(BUILD_DIR)/slow5.o: src/slow5.c src/slow5_extra.h src/slow5_idx.h src/slow5_misc.h src/klib/ksort.h $(SLOW5_H)
+$(BUILD_DIR)/slow5.o: src/slow5.c src/slow5_extra.h src/slow5_idx.h src/slow5_misc.h src/klib/ksort.h src/slow5_byte.h $(SLOW5_H)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -fpic -o $@
 
-$(BUILD_DIR)/slow5_idx.o: src/slow5_idx.c src/slow5_idx.h src/slow5_extra.h src/slow5_misc.h $(SLOW5_H)
+$(BUILD_DIR)/slow5_idx.o: src/slow5_idx.c src/slow5_idx.h src/slow5_extra.h src/slow5_misc.h src/slow5_byte.h $(SLOW5_H)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -fpic -o $@
 
 $(BUILD_DIR)/slow5_misc.o: src/slow5_misc.c src/slow5_misc.h include/slow5/slow5_error.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -fpic -o $@
 
 $(BUILD_DIR)/slow5_press.o: src/slow5_press.c include/slow5/slow5_press.h src/slow5_misc.h include/slow5/slow5_error.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -fpic -o $@
+
+$(BUILD_DIR)/slow5_mt.o: src/slow5_mt.c include/slow5/slow5_mt.h $(SLOW5_H)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -fpic -o $@
 
 clean:
@@ -81,6 +90,7 @@ pyslow5:
 	python3 setup.py build
 	cp build/lib.*/*.so  ./
 	python3 < python/example.py
+	rm -rf .eggs/
 	python3 setup.py sdist
 
 

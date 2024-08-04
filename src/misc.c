@@ -42,6 +42,7 @@ int8_t drna_detect(slow5_file_t *sp){
     }
     if (strcmp(exp,"genomic_dna")==0){
         rna = 0;
+        INFO("%s","DNA data detected.");
     }else if (strcmp(exp,"rna")==0){
         rna = 1;
         INFO("%s","RNA data detected.");
@@ -67,4 +68,34 @@ void drna_mismatch(slow5_file_t *sp, int8_t rna){
             WARNING("Experiment type mismatch: %s != %s in read group %d. Double check for --rna.", curr, expected, i);
         }
     }
+}
+
+
+int8_t pore_detect(slow5_file_t *sp){
+
+    const slow5_hdr_t* hdr = sp->header;
+    int8_t pore = OPT_PORE_R9;
+    char *kit =slow5_hdr_get("sequencing_kit", 0, hdr);
+    if(kit==NULL){
+        WARNING("%s","sequencing_kit not found in SLOW5 header. Assuming R9.4.1");
+        return 0;
+    }
+    if (strstr(kit,"114")!=NULL){
+        pore = OPT_PORE_R10;
+        INFO("%s","R10 data detected.");
+    } else if (strstr(kit,"rna004")!=NULL){
+        INFO("%s","RNA004 data detected.");
+        pore = OPT_PORE_RNA004;
+    } else {
+        INFO("%s","R9 data detected.");
+        pore = OPT_PORE_R9;
+    }
+
+    for(uint32_t  i=1; i < hdr->num_read_groups; i++){
+        char *curr =slow5_hdr_get("sequencing_kit", i, hdr);
+        if (strcmp(curr, kit)){
+            WARNING("sequencing_kit type mismatch: %s != %s in read group %d. Defaulted to %s", curr, kit, i, kit);
+        }
+    }
+    return pore;
 }

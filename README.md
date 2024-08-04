@@ -172,7 +172,7 @@ Under construction. Will change anytime. Calculates shannon entropy for reads in
 |1  |string|read_id         |Read identifier name                                                   |
 |2  |float   |raw_ent  |entropy of raw signal samples                                |
 |3  |float   |delta_ent     |entropy after zig-zag delta                                  |
-|4  |float   |byte_ent       |entropy after splitting and storing least significant byte and most significant byte of the signal samples separately: ent(LSB)+ent(MSB)                                    |
+|4  |float   |byte_ent       |entropy after splitting and storing least significant byte and most significant byte of the zig-zag delta values separately: ent(LSB)+ent(MSB)                                    |
 
 ### ss
 

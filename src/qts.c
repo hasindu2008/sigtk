@@ -20,8 +20,29 @@ static struct option long_options[] = {
     {"help", no_argument, 0, 'h'},                 //1
     {"version", no_argument, 0, 'V'},              //2
     {"output",required_argument,0,'o'},            //3 output file
-    {"bits",required_argument,0,'b'},               //4 number of LSB bits to truncate
+    {"bits",required_argument,0,'b'},              //4 number of LSB bits
+    {"method",required_argument,0,'m'}             //5 quantization method
 };
+
+int round_to_power_of_2(int number, int number_of_bits) {
+    //create a binary mask with the specified number of bits
+    int bit_mask = (1 << number_of_bits) - 1;
+    
+    //extract out the value of the LSBs considered
+    int lsb_bits = number & bit_mask;
+    
+     
+    int round_threshold = (1 << (number_of_bits - 1));
+    
+    //check if the least significant bits are closer to 0 or 2^n
+    if (lsb_bits < round_threshold) {
+        return (number & ~bit_mask) + 0; //round down to the nearest power of 2
+    } else {
+        return (number & ~bit_mask) + (1 << number_of_bits); //round up to the nearest power of 2
+    }
+}
+
+
 
 int qtsmain(int argc, char* argv[]) {
 
@@ -35,6 +56,8 @@ int qtsmain(int argc, char* argv[]) {
 
     int8_t b = 1; //number of LSB bits to truncate
 
+    char *method = "floor"; //quantization method
+
     //parse the user args
     while ((c = getopt_long(argc, argv, optstring, long_options, &longindex)) >= 0) {
         if (c=='V'){
@@ -44,22 +67,25 @@ int qtsmain(int argc, char* argv[]) {
             fp_help = stdout;
         } else if (c=='o'){
             out_fn = optarg;
-        } else if (c=='b'){
+        } else if (c=='b'){  
             b = atoi(optarg);
             if (b < 0 || b > 16) {
                 fprintf(stderr, "Error: number of bits to truncate must be between 0 and 8\n");
                 exit(EXIT_FAILURE);
             }
+        } else if (c=='m'){
+            method = optarg;
         }
     }
 
     if (argc-optind!=1 || fp_help == stdout) {
         fprintf(fp_help,"Usage: sigtk qts a.blow5 -o out.blow5\n");
         fprintf(fp_help,"\nbasic options:\n");
-        fprintf(fp_help,"   -h                         help\n");
-        fprintf(fp_help,"   -o FILE                    output file\n");
-        fprintf(fp_help,"   --version                  print version\n");
-        fprintf(fp_help,"   -b INT                     number of LSB bits to truncate [%d]\n", b);
+        fprintf(fp_help,"   -h                            help\n");
+        fprintf(fp_help,"   -o FILE                       output file\n");
+        fprintf(fp_help,"   --version                     print version\n");
+        fprintf(fp_help,"   -b INT                        number of LSB bits to truncate [%d]\n", b);
+        fprintf(fp_help,"   --method=[floor|round|fill-ones]   quantization method\n");
         if(fp_help == stdout){
             exit(EXIT_SUCCESS);
         }
@@ -98,10 +124,23 @@ int qtsmain(int argc, char* argv[]) {
     int ret=0;
 
     while((ret = slow5_get_next(&rec,sp)) >= 0){
-
-        for(uint64_t i=0;i<rec->len_raw_signal;i++){
-            rec->raw_signal[i] = ( rec->raw_signal[i] >> b ) << b;
+        if(strcmp(method, "floor") == 0){// truncate b LSBs
+            for(uint64_t i=0;i<rec->len_raw_signal;i++){
+                rec->raw_signal[i] = ( rec->raw_signal[i] >> b ) << b;
+            }
+        } else if(strcmp(method, "round") == 0){
+            for(uint64_t i=0;i<rec->len_raw_signal;i++){
+                rec->raw_signal[i] = round_to_power_of_2(rec->raw_signal[i], b);
+            }
+        } else if(strcmp(method, "fill-ones") == 0) { //fill the interested LSBs with 1s
+            for(uint64_t i=0;i<rec->len_raw_signal;i++){
+                rec->raw_signal[i] = (rec->raw_signal[i]) | ((1 << b)-1);
+            }
+        } else {
+            fprintf(stderr,"Unknown method for -m. Available options are floor,round,fill-ones.\n");
+            exit(EXIT_FAILURE);
         }
+        
         //write to file
         if(slow5_write(rec, sp_w) < 0){
             fprintf(stderr,"Error writing record!\n");

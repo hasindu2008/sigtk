@@ -11,8 +11,8 @@ extern "C" {
 #endif
 
 /*
-IMPORTANT: The low-level API is not yet finalised or documented and is only for internal use.
-If anyone is interested, please open a GitHub issue, rather than trying to figure out from the code.
+IMPORTANT: These are functions for internal use.
+If anyone is interested in getting any of these functions exposed, please open a GitHub issue.
 Function prototypes can be changed without notice or completely removed. So do NOT use these functions in your code.
 these functions are used by slow5tools and pyslow5 - so any change to a function here means slow5tools and pyslow5 must be fixed.
 */
@@ -46,6 +46,10 @@ struct slow5_idx {
 
 
 struct slow5_idx *slow5_idx_init(struct slow5_file *s5p);
+struct slow5_idx *slow5_idx_init_with(struct slow5_file *s5p, const char *pathname);
+struct slow5_idx *slow5_idx_init_empty(void);
+int slow5_idx_read(struct slow5_idx *index);
+
 /**
  * Create the index file for slow5 file.
  * Overrides if already exists.
