@@ -1,6 +1,6 @@
 # sigtk
 
-A simple toolkit written for performing various operations on nanopore raw signal data. This is still in a very premature development stage and thus anticipate changes. Currently, *sigtk* is single threaded and has not been optimised for performance. The intended use is to perform operations on relatively smaller datasets for learning purposes and eyeballing.
+A simple toolkit written for performing various operations on nanopore raw signal data.  *sigtk* is single threaded and is not optimised for performance. The intended use is to perform operations on relatively smaller datasets for learning purposes and eyeballing.
 
 ## Building
 
@@ -105,14 +105,9 @@ Prints signal statistics.
 |7  |int   |raw_median      |Median of raw signal values                                            |
 |8  |float |pa_median       |Mean of pico-amperes scaled signal                                     |
 
-
-## subtools under development
-
-Note that these are not much tested and the interface and output may change at anytime.
-
 ### prefix
 
-Under construction. Will change anytime. Only for direct RNA at the moment.
+Under development. Only for direct RNA at the moment.
 Finds prefix segments in a raw signal such as adaptor and polyA.
 
 |Col|Type  |Name            |Description                                                            |
@@ -137,7 +132,7 @@ If `--print-stat` is printed, following additional columns will be printed.
 
 ### jnn
 
-Under construction. Will change anytime. Print segments found using JNN segmenter.
+Under development.  Print segments found using JNN segmenter.
 
 |Col|Type  |Name            |Description                                                            |
 |--:|:----:|:------:        |:-----------------------------------------                             |
@@ -163,9 +158,20 @@ If `-c` is specified, output will be in the following short notation by using re
 
 `100H10,91H11,`
 
+
+### ss
+
+Under development. Operations to convert to/from signal alignment string (ss). See https://hasindu2008.github.io/f5c/docs/output#resquiggle-paf-output-format for explanation of ss.
+
+To convert a PAF file with ss tags to TSV, you can use:
+```
+sigtk ss paf2tsv in.paf
+```
+
+
 ### ent
 
-Under construction. Will change anytime. Calculates shannon entropy for reads in a given S/BLOW5 file.
+Calculates shannon entropy for reads in a given S/BLOW5 file.
 
 |Col|Type  |Name            |Description                                                            |
 |--:|:----:|:------:        |:-----------------------------------------                             |
@@ -174,17 +180,9 @@ Under construction. Will change anytime. Calculates shannon entropy for reads in
 |3  |float   |delta_ent     |entropy after zig-zag delta                                  |
 |4  |float   |byte_ent       |entropy after splitting and storing least significant byte and most significant byte of the zig-zag delta values separately: ent(LSB)+ent(MSB)                                    |
 
-### ss
-
-Under construction. Will change anytime. Operations to convert to/from signal alignment string (ss). See https://hasindu2008.github.io/f5c/docs/output#resquiggle-paf-output-format for explanation of ss.
-
-To convert a PAF file with ss tags to TSV, you can use:
-```
-sigtk ss paf2tsv in.paf
-```
-
 ### qts
-Under construction. Will change anytime. Quantise the raw signal in a S/BLOW5 files. Takes a S/BLOW5 file as the input and writes the quantised output to a S/BLOW5 file.
+
+Quantise the raw signal in a S/BLOW5 files. Takes a S/BLOW5 file as the input and writes the quantised output to a S/BLOW5 file.
 
 Usage:
 ```
@@ -192,7 +190,8 @@ sigtk qts original.blow5 -o quantised.blow5
 ```
 
 Options:
-`-q INT` : Number of LSB bits to trucate (set to 0). Default is 1.
+`-q INT` : Number of lower significant bits eliminate. Default is 1.
+`-m [floor|round|fill-ones]`: quantisation method. Default is round.
 
 
 ## Acknowledgement

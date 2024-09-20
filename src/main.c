@@ -58,7 +58,7 @@ int print_usage(FILE *fp_help){
     fprintf(fp_help,"         jnn       print segments found using JNN segmenter\n");
     fprintf(fp_help,"         ss        ss string conversion\n");
     fprintf(fp_help,"         ent       calculate entropies\n");
-    fprintf(fp_help,"         qts       quantise\n");
+    fprintf(fp_help,"         qts       quantise the raw signal in a S/BLOW5 files\n");
 
     if(fp_help==stderr){
         exit(EXIT_FAILURE);

@@ -27,13 +27,13 @@ static struct option long_options[] = {
 int round_to_power_of_2(int number, int number_of_bits) {
     //create a binary mask with the specified number of bits
     int bit_mask = (1 << number_of_bits) - 1;
-    
+
     //extract out the value of the LSBs considered
     int lsb_bits = number & bit_mask;
-    
-     
+
+
     int round_threshold = (1 << (number_of_bits - 1));
-    
+
     //check if the least significant bits are closer to 0 or 2^n
     if (lsb_bits < round_threshold) {
         return (number & ~bit_mask) + 0; //round down to the nearest power of 2
@@ -46,7 +46,7 @@ int round_to_power_of_2(int number, int number_of_bits) {
 
 int qtsmain(int argc, char* argv[]) {
 
-    const char* optstring = "hVv:o:b:";
+    const char* optstring = "hVv:o:b:m:";
 
     int longindex = 0;
     int32_t c = -1;
@@ -56,7 +56,7 @@ int qtsmain(int argc, char* argv[]) {
 
     int8_t b = 1; //number of LSB bits to truncate
 
-    char *method = "floor"; //quantization method
+    char *method = "round"; //quantization method
 
     //parse the user args
     while ((c = getopt_long(argc, argv, optstring, long_options, &longindex)) >= 0) {
@@ -67,10 +67,10 @@ int qtsmain(int argc, char* argv[]) {
             fp_help = stdout;
         } else if (c=='o'){
             out_fn = optarg;
-        } else if (c=='b'){  
+        } else if (c=='b'){
             b = atoi(optarg);
-            if (b < 0 || b > 16) {
-                fprintf(stderr, "Error: number of bits to truncate must be between 0 and 8\n");
+            if (b < 1 || b > 8) {
+                fprintf(stderr, "Error: number of bits to truncate must be between 1 and 8\n");
                 exit(EXIT_FAILURE);
             }
         } else if (c=='m'){
@@ -84,8 +84,8 @@ int qtsmain(int argc, char* argv[]) {
         fprintf(fp_help,"   -h                            help\n");
         fprintf(fp_help,"   -o FILE                       output file\n");
         fprintf(fp_help,"   --version                     print version\n");
-        fprintf(fp_help,"   -b INT                        number of LSB bits to truncate [%d]\n", b);
-        fprintf(fp_help,"   --method=[floor|round|fill-ones]   quantization method\n");
+        fprintf(fp_help,"   -b INT                        number of lower significant bits to eliminate [%d]\n", b);
+        fprintf(fp_help,"   -m [floor|round|fill-ones]    quantisation method [round]\n");
         if(fp_help == stdout){
             exit(EXIT_SUCCESS);
         }
@@ -140,7 +140,7 @@ int qtsmain(int argc, char* argv[]) {
             fprintf(stderr,"Unknown method for -m. Available options are floor,round,fill-ones.\n");
             exit(EXIT_FAILURE);
         }
-        
+
         //write to file
         if(slow5_write(rec, sp_w) < 0){
             fprintf(stderr,"Error writing record!\n");
