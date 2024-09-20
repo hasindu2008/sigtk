@@ -1,6 +1,6 @@
 # sigtk
 
-A simple toolkit written for performing various operations on nanopore raw signal data.  *sigtk* is single threaded and is not optimised for performance. The intended use is to perform operations on relatively smaller datasets for learning purposes and eyeballing.
+A simple toolkit written for performing various operations on nanopore raw signal data.  *sigtk* is single threaded and is not optimised for performance. The intended use is to perform operations on relatively smaller datasets for learning purposes and eyeballing. Also, serves as examples for getting started with writing C programmes for nanopore signal analysis with BLOW5. The documentation is very brief at the moment, so just open an issue to get something clarified.
 
 ## Building
 
