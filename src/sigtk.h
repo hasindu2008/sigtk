@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <slow5/slow5.h>
 
-#define SIGTK_VERSION "0.1.0"
+#define SIGTK_VERSION "0.2.0"
 
 //model types
 #define MODEL_TYPE_NUCLEOTIDE 1
