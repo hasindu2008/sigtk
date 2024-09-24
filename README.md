@@ -190,8 +190,9 @@ sigtk qts original.blow5 -o quantised.blow5
 ```
 
 Options:
-`-q INT` : Number of lower significant bits eliminate. Default is 1.
-`-m [floor|round|fill-ones]`: quantisation method. Default is round.
+
+- `-b INT` : Number of lower significant bits eliminate. Default is 1.
+- `-m [floor|round|fill-ones]`: quantisation method. Default is round.
 
 
 ## Acknowledgement
