@@ -232,3 +232,43 @@ void prefix_func(slow5_rec_t *rec, opt_t opt){
 
     //trim_polya(rec);
 }
+
+#define TRANS_MAX_THRESH 300
+void trans_hdr(){
+    printf("read_id\tlen_raw_signal\t");
+    for(int i=0;i<TRANS_MAX_THRESH;i++){
+        printf("trans_%d\t", i);
+    }
+    printf("\n");
+}
+
+
+void trans_func(slow5_rec_t *rec, opt_t opt){
+
+    printf("%s\t%ld\t", rec->read_id, rec->len_raw_signal);
+
+    int trans_high_counts[TRANS_MAX_THRESH];
+
+    for(int cut=0;cut<TRANS_MAX_THRESH;cut++){
+        trans_high_counts[cut] = 0;
+
+        if(rec->len_raw_signal>1) {
+            int16_t val_prev=rec->raw_signal[0];
+            for(uint64_t j=0;j<rec->len_raw_signal;j++){
+                int16_t val=rec->raw_signal[j];
+                int16_t delta = val - val_prev;
+                val_prev=val;
+                int16_t abs = delta>=0 ? delta : -delta;
+                if(abs>cut){
+                    trans_high_counts[cut]++;
+                }
+            }
+        }
+    }
+
+    for(int cut=0;cut<TRANS_MAX_THRESH;cut++){
+        printf("%.0f\t", rec->len_raw_signal/(float)trans_high_counts[cut]);
+    }
+    printf("\n");
+
+}

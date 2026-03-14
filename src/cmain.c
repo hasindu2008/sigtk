@@ -29,11 +29,13 @@ void event_func(slow5_rec_t *rec, opt_t opt);
 void stat_func(slow5_rec_t *rec, opt_t opt);
 void prefix_func(slow5_rec_t *rec, opt_t opt);
 void pa_func(slow5_rec_t *rec, opt_t opt);
+void trans_func(slow5_rec_t *rec, opt_t opt);
 void stat_hdr();
 void prefix_hdr(opt_t opt);
 void event_hdr(opt_t opt);
 void pa_hdr();
 void jnn_hdr();
+void trans_hdr();
 void jnn_func(slow5_rec_t *rec, opt_t opt);
 int8_t drna_detect(slow5_file_t *sp);
 
@@ -109,6 +111,9 @@ int cmain(int argc, char* argv[], char *mode) {
     }else if (strcmp(mode,"pa") == 0){
         if(hdr) pa_hdr();
         func = pa_func;
+    }else if (strcmp(mode,"trans") == 0){
+        if(hdr) trans_hdr();
+        func = trans_func;
     } else {
         ERROR("unknown mode %s\n", mode);
         exit(EXIT_FAILURE);

@@ -23,6 +23,7 @@ OBJ = $(BUILD_DIR)/main.o \
 	  $(BUILD_DIR)/ss.o \
 	  $(BUILD_DIR)/ent.o \
 	  $(BUILD_DIR)/qts.o \
+	  $(BUILD_DIR)/filt.o \
 
 
 PREFIX = /usr/local
@@ -72,6 +73,9 @@ $(BUILD_DIR)/ent.o: src/ent.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 $(BUILD_DIR)/qts.o: src/qts.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+
+$(BUILD_DIR)/filt.o: src/filt.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
 
 slow5lib/lib/libslow5.a:

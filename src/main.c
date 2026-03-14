@@ -45,6 +45,7 @@ int srefmain(int argc, char* argv[]);
 int ssmain(int argc, char* argv[]);
 int entmain(int argc, char* argv[]);
 int qtsmain(int argc, char* argv[]);
+int filtmain(int argc, char* argv[]);
 
 int print_usage(FILE *fp_help){
 
@@ -56,9 +57,11 @@ int print_usage(FILE *fp_help){
     fprintf(fp_help,"         stat      print statistics of the raw signal\n");
     fprintf(fp_help,"         prefix    prefix segments such as adaptor and polyA\n");
     fprintf(fp_help,"         jnn       print segments found using JNN segmenter\n");
+    fprintf(fp_help,"         trans     print for each threshold: signal_len/(count[transition>thresh])\n");
     fprintf(fp_help,"         ss        ss string conversion\n");
     fprintf(fp_help,"         ent       calculate entropies\n");
     fprintf(fp_help,"         qts       quantise the raw signal in a S/BLOW5 files\n");
+    fprintf(fp_help,"         filt      remove junk reads\n");
 
     if(fp_help==stderr){
         exit(EXIT_FAILURE);
@@ -86,7 +89,7 @@ int main(int argc, char* argv[]){
     else if (strcmp(argv[1],"sref")==0){
         ret=srefmain(argc-1, argv+1);
     }
-    else if (strcmp(argv[1],"event")==0 || strcmp(argv[1],"stat")==0 || strcmp(argv[1],"prefix")==0 || strcmp(argv[1],"pa")==0 || strcmp(argv[1],"jnn")==0){
+    else if (strcmp(argv[1],"event")==0 || strcmp(argv[1],"stat")==0 || strcmp(argv[1],"prefix")==0 || strcmp(argv[1],"pa")==0 || strcmp(argv[1],"jnn")==0 || strcmp(argv[1],"trans")==0){
         ret=cmain(argc-1, argv+1, argv[1]);
     }
     else if (strcmp(argv[1],"ss")==0){
@@ -97,6 +100,9 @@ int main(int argc, char* argv[]){
     }
     else if (strcmp(argv[1],"qts")==0){
         ret=qtsmain(argc-1, argv+1);
+    }
+    else if (strcmp(argv[1],"filt")==0){
+        ret=filtmain(argc-1, argv+1);
     }
     else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"sigtk %s\n",SIGTK_VERSION);
