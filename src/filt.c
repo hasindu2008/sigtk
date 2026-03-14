@@ -23,8 +23,6 @@ static struct option long_options[] = {
     {"invert", no_argument, 0, 'i'},               //4 invert filter
     {"dist-thresh", required_argument, 0, 'd'},    //5 distance threshold
     {"trans-thresh", required_argument, 0, 't'},   //6 transition level
-
-
 };
 
 static int isto_write_read(slow5_rec_t *rec, slow5_file_t *sp, uint8_t invert, int dist_thresh, int trans_thresh){
@@ -111,6 +109,16 @@ int filtmain(int argc, char* argv[]) {
        exit(EXIT_FAILURE);
     }
 
+    if(drna_detect(sp)){
+        ERROR("%s","Not yet implemented for direct-RNA.");
+        exit(EXIT_FAILURE);
+    }
+
+    if(pore_detect(sp)!=OPT_PORE_R10){
+        ERROR("%s","Only implemented for R10 pores.");
+        exit(EXIT_FAILURE);
+    }
+
     //open the SLOW5 file for writing
     slow5_file_t *sp_w = slow5_open(out_fn, "w");
     if(sp_w==NULL){
@@ -132,8 +140,20 @@ int filtmain(int argc, char* argv[]) {
     int written=0;
     int total = 0;
 
+    int warn = 1;
+
     while((ret = slow5_get_next(&rec,sp)) >= 0){
-        total++;
+
+        if(warn){
+            if(rec->sampling_rate != 5000){
+                WARNING("%s","Sampling rate is not 5000 Hz. This hasn't been tested for default thresholds.");
+            }
+            if(rec->digitisation != 2048){
+                WARNING("%s","Digitisation is not 2048. This hasn't been tested for default thresholds.");
+            }
+            warn = 0;
+        }
+
 
         int eval = isto_write_read(rec, sp, invert, dist_thresh, trans_thresh);
 
@@ -145,6 +165,8 @@ int filtmain(int argc, char* argv[]) {
             }
             written++;
         }
+
+        total++;
 
     }
 
